@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- <html ng-app="plunker" ng-controller="MainCtrl"> -->
+
+<head>
+<link href="https://fonts.googleapis.com/css?family=Cardo:400,700|Oswald" rel="stylesheet">
+<meta charset="utf-8">
+<title>Leaflet</title>
+<script>
+  document.write('<base href="' + document.location + '" />');
+</script>
+<link rel="stylesheet"  href="lib/style.css" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+
+<script type="text/javascript" src="lib/leaflet-search.js"></script>
+
+ <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js"></script>
+</script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.0/leaflet.markercluster.js"></script>
+
+
+<script src="https://elfalem.github.io/Leaflet.curve/src/leaflet.curve.js"></script>
+</head>
+ 
+<body>
+  <div id='map'></div>
+
+  <div id="map_sidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <div id = "nav_info"></div>
+  </div>
+
+</body>
+<script src="lib/config.js"></script>
+<script src="lib/app.js"></script>
+
+</html>
