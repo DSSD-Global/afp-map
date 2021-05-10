@@ -1,279 +1,281 @@
 /* Add your styles here */	
-	.marker-cluster {	
-		background-clip: padding-box;	
-		border-radius: 20px;	
-		}	
-	.marker-cluster div {	
-		width: 30px;	
-		height: 30px;	
-		margin-left: 5px;	
-		margin-top: 5px;	
-		
-		text-align: center;	
-		border-radius: 15px;	
-		font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;	
-		}	
-	.marker-cluster span {	
-		line-height: 30px;	
-		}	
-	.marker-cluster-small {	
-		background-color: rgba(10, 200, 235, .6);	
-		}	
-	.marker-cluster-small div {	
-		background-color: rgba(0, 181, 226, .6);	
-		}	
-		.marker-cluster-medium {	
-		background-color: rgba(10, 125, 205, 0.6);	
-		}	
-	.marker-cluster-medium div {	
-		background-color: rgba(0, 119, 200, 0.6);	
-		}	
-		
-	.marker-cluster-large {	
-		background-color: rgba(10, 105, 165, 0.6);	
-		}	
-	.marker-cluster-large div {	
-		background-color: rgba(0, 98, 155, 0.6);	
-		}	
-		
-	* {	
-	  box-sizing: border-box;	
-		margin: 0;	
-		padding: 0;	
-		font-size: inherit;	
+.marker-cluster {	
+	background-clip: padding-box;	
+	border-radius: 20px;	
 	}	
-		
-	/** Setting the default font sizes */	
-	html {	
-		width: 100%;	
-		height: 100%;	
-		background-color: #555566;	
+.marker-cluster div {	
+	width: 30px;	
+	height: 30px;	
+	margin-left: 5px;	
+	margin-top: 5px;	
+	
+	text-align: center;	
+	border-radius: 15px;	
+	font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;	
 	}	
-		
-	body {	
-		font-size: 40px;	
-		width: 100%;	
-		height: 100%;	
-		cursor: auto;	
-		background-color: #555566;	
+.marker-cluster span {	
+	line-height: 30px;	
 	}	
-		
-	#map {	
-		position: absolute;	
-		top: 0;	
-		right: 0;	
-		left: 0;	
-		bottom: 0;	
-		top: 0;	
-		z-index: 0;	
+.marker-cluster-small {	
+	background-color: rgba(10, 200, 235, .6);	
 	}	
-		
-	.AfPicon {	
-					border-radius:300%;	
-					background-attachment: fixed;	
-					background-position: top left;	
-					position: absolute;	
-					border-width: 30px;	
-					border-height: 30px;	
-	        }	
-		
-	.main-icon-footer {	
-	  position: absolute;	
-	  display: flex;	
-	  justify-content: center;	
-	  align-items: center;	
-	  width: 40px;	
-	  height: 40px;	
-	  border-radius: 100%;	
-	  background: white;	
-	  border: 1px #ffffff solid;	
-		box-shadow:         0px 2px 0px 0px rgb(204, 186, 186);	
+.marker-cluster-small div {	
+	background-color: rgba(0, 181, 226, .6);	
 	}	
-		
-	.t{	
-		padding-top: 1px;	
-		width: 300px;	
-		height: 30px;	
-		text-align: right;	
+.marker-cluster-medium {	
+	background-color: rgba(10, 125, 205, 0.6);	
 	}	
-		
-	.leaflet-control-layers {	
-		margin: 10px auto;	
-		width: 300px;	
-		height: 650px;	
-		text-align: left;	
+.marker-cluster-medium div {	
+	background-color: rgba(0, 119, 200, 0.6);	
 	}	
-		
-		
-/* The sidebar menu */
-.sidebar {
-  height: 100%; /* 100% Full-height */
-  width: 0; /* 0 width - change this with JavaScript */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Stay on top */
-  top: 0;
-  left: 0;
-  background-color:rgba(255, 255, 255, 0.75);
-  overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 50px;
-  transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+	
+.marker-cluster-large {	
+	background-color: rgba(10, 105, 165, 0.6);	
+	}	
+.marker-cluster-large div {	
+	background-color: rgba(0, 98, 155, 0.6);	
+	}	
+	
+* {	
+  	box-sizing: border-box;	
+	margin: 0;	
+	padding: 0;	
+	font-size: inherit;	
+}	
+	
+/** Setting the default font sizes */	
+html {	
+	width: 100%;	
+	height: 100%;	
+	background-color: #555566;	
+}	
+	
+body {	
+	font-size: 40px;	
+	width: 100%;	
+	height: 100%;	
+	cursor: auto;	
+	background-color: #555566;	
+}	
+	
+#map {	
+	position: absolute;	
+	top: 0;	
+	right: 0;	
+	left: 0;	
+	bottom: 0;	
+	top: 0;	
+	z-index: 0;	
+}	
+	
+.AfPicon {	
+				border-radius:300%;	
+				background-attachment: fixed;	
+				background-position: top left;	
+				position: absolute;	
+				border-width: 30px;	
+				border-height: 30px;	
+		}	
+	
+.main-icon-footer {	
+  position: absolute;	
+  display: flex;	
+  justify-content: center;	
+  align-items: center;	
+  width: 40px;	
+  height: 40px;	
+  border-radius: 100%;	
+  background: white;	
+  border: 1px #ffffff solid;	
+	box-shadow:         0px 2px 0px 0px rgb(204, 186, 186);	
+}	
+	
+.t{	
+	padding-top: 1px;	
+	width: 30px;	
+	height: 30px;	
+	text-align: right;	
+}	
+	
+.leaflet-control-layers {	
+	margin: 10px auto;	
+	width: 300px;	
+	height: 635px;	
+	text-align: left;	
+	overflow-x: auto;
+	overflow-y: auto;
+}	
+	
+	
+/* The sidebar menu */	
+.sidebar {	
+  height: 100%; /* 100% Full-height */	
+  width: 0; /* 0 width - change this with JavaScript */	
+  position: fixed; /* Stay in place */	
+  z-index: 1; /* Stay on top */	
+  top: 0;	
+  left: 0;	
+  background-color:rgba(255, 255, 255, 0.75);	
+  overflow-x: hidden; /* Disable horizontal scroll */	
+  padding-top: 50px;	
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */	
+}		
+	
+/* Position and style the close button (top right corner) */	
+.sidebar .closebtn {	
+  position: absolute;	
+  top: 0;	
+  right: 20px;	
+  font-size: 36px;	
+	color: #2a2a2a;	
+	text-decoration: none;	
+}	
+	
+.sidebar .closebtn:hover{	
+	color: #a9a9a9;	
+}	
+	
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */	
+#main {	
+  transition: margin-left .5s; /* If you want a transition effect */	
+  padding: 20px;	
+}	
+	
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */	
+@media screen and (max-height: 450px) {	
+  .sidebar {padding-top: 15px;}	
+  .sidebar a {font-size: 18px;}	
+}	
+	
+.org_name {	
+	font-family: 'Oswald', sans-serif;	
+  text-transform: uppercase;	
+	font-size: 32px;	
+	text-align: center;	
+	margin: 10px 20px 10px 20px;	
+}	
+	
+.org_img {	
+	display: block;	
+	margin-left: auto;	
+	margin-right: auto;	
+}	
+	
+.org_desc {	
+	font-family: 'Cardo', serif;	
+	font-size: 24px;	
+	color: #464646;	
+	margin: 10px 20px 10px 20px;	
+}	
+	
+.org_url {	
+	font-family: 'Cardo', serif;	
+	font-size: 22px;	
+	color: #464646;	
+	margin: 20px 20px 10px 20px;		
+}	
+.leaflet-control-search.search-exp {/*expanded*/	
+	background: #fff;	
+	border: 2px solid rgba(0,0,0,0.2);	
+	background-clip: padding-box;		
+}	
+.leaflet-control-search .search-input {	
+	display:block;	
+	float:left;	
+	background: #fff;	
+	border:1px solid #666;	
+	border-radius:2px;	
+	height:22px;	
+	padding:0 20px 0 2px;	
+	margin:4px 0 4px 4px;	
+}	
+.leaflet-control-search.search-load .search-input {	
+	background: url('https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/loader.gif') no-repeat center right #fff;	
+}	
+.leaflet-control-search.search-load .search-cancel {	
+	visibility:hidden;	
+}	
+.leaflet-control-search .search-cancel {	
+	display:block;	
+	width:22px;	
+	height:22px;	
+	position:absolute;	
+	right:28px;	
+	margin:6px 0;	
+	background: url('https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/search-icon.png') no-repeat 0 -46px;	
+	text-decoration:none;	
+	filter: alpha(opacity=80);	
+	opacity: 0.8;			
+}	
+.leaflet-control-search .search-cancel:hover {	
+	filter: alpha(opacity=100);	
+	opacity: 1;	
+}	
+.leaflet-control-search .search-cancel span {	
+	display:none;/* comment for cancel button imageless */	
+	font-size:18px;	
+	line-height:20px;	
+	color:#ccc;	
+	font-weight:bold;	
+}	
+.leaflet-control-search .search-cancel:hover span {	
+	color:#aaa;	
+}	
+.leaflet-control-search .search-button {	
+	display:block;	
+	float:right;	
+	width:30px;	
+	height:30px;		
+	background: url('https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/search-icon.png') no-repeat 4px 4px #fff;	
+	border-right-width: 400px;	
+	border-radius:400px;	
+	border-color:red;	
+}	
+.leaflet-control-search .search-button:hover {	
+	background: url('https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/search-icon.png') no-repeat 4px -20px #fafafa;	
+}	
+.leaflet-control-search .search-tooltip {	
+	position:absolute;	
+	top:100%;	
+	left:0;	
+	float:left;	
+	list-style: none;	
+	padding-left: 0;	
+	min-width:120px;	
+	max-height:122px;	
+	box-shadow: 1px 1px 6px rgba(0,0,0,0.4);	
+	background-color: rgba(0, 0, 0, 0.25);	
+	z-index:1010;	
+	overflow-y:auto;	
+	overflow-x:hidden;	
+	cursor: pointer;	
+}	
+.leaflet-control-search .search-tip {	
+	margin:2px;	
+	padding:2px 4px;	
+	display:block;	
+	color:black;	
+	background: #eee;	
+	border-radius:.25em;	
+	text-decoration:none;		
+	white-space:nowrap;	
+	vertical-align:center;	
+}	
+.leaflet-control-search .search-button:hover {	
+	background-color: #f4f4f4;	
+}	
+.leaflet-control-search .search-tip-select,	
+.leaflet-control-search .search-tip:hover {	
+	background-color: #fff;	
+}	
+.leaflet-control-search .search-alert {	
+	cursor:pointer;	
+	clear:both;	
+	font-size:.75em;	
+	margin-bottom:5px;	
+	padding:0 .25em;	
+	color:#e00;	
+	font-weight:bold;	
+	border-radius:.25em;
 }
 
-/* Position and style the close button (top right corner) */
-.sidebar .closebtn {
-  position: absolute;
-  top: 0;
-  right: 20px;
-  font-size: 36px;
-	color: #2a2a2a;
-	text-decoration: none;
-}
-
-.sidebar .closebtn:hover{
-	color: #a9a9a9;
-}
-
-/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
-#main {
-  transition: margin-left .5s; /* If you want a transition effect */
-  padding: 20px;
-}
-
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-@media screen and (max-height: 450px) {
-  .sidebar {padding-top: 15px;}
-  .sidebar a {font-size: 18px;}
-}
-
-.org_name {
-	font-family: 'Oswald', sans-serif;
-  text-transform: uppercase;
-	font-size: 32px;
-	text-align: center;
-	margin: 10px 20px 10px 20px;
-}
-
-.org_img {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.org_desc {
-	font-family: 'Cardo', serif;
-	font-size: 24px;
-	color: #464646;
-	margin: 10px 20px 10px 20px;
-}
-
-.org_url {
-	font-family: 'Cardo', serif;
-	font-size: 22px;
-	color: #464646;
-	margin: 20px 20px 10px 20px;
-}
-
-	.leaflet-control-search.search-exp {/*expanded*/	
-		background: #fff;	
-		border: 2px solid rgba(0,0,0,0.2);	
-		background-clip: padding-box;		
-	}	
-	.leaflet-control-search .search-input {	
-		display:block;	
-		float:left;	
-		background: #fff;	
-		border:1px solid #666;	
-		border-radius:2px;	
-		height:22px;	
-		padding:0 20px 0 2px;	
-		margin:4px 0 4px 4px;	
-	}	
-	.leaflet-control-search.search-load .search-input {	
-		background: url('https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/loader.gif') no-repeat center right #fff;	
-	}	
-	.leaflet-control-search.search-load .search-cancel {	
-		visibility:hidden;	
-	}	
-	.leaflet-control-search .search-cancel {	
-		display:block;	
-		width:22px;	
-		height:22px;	
-		position:absolute;	
-		right:28px;	
-		margin:6px 0;	
-		background: url('https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/search-icon.png') no-repeat 0 -46px;	
-		text-decoration:none;	
-		filter: alpha(opacity=80);	
-		opacity: 0.8;			
-	}	
-	.leaflet-control-search .search-cancel:hover {	
-		filter: alpha(opacity=100);	
-		opacity: 1;	
-	}	
-	.leaflet-control-search .search-cancel span {	
-		display:none;/* comment for cancel button imageless */	
-		font-size:18px;	
-		line-height:20px;	
-		color:#ccc;	
-		font-weight:bold;	
-	}	
-	.leaflet-control-search .search-cancel:hover span {	
-		color:#aaa;	
-	}	
-	.leaflet-control-search .search-button {	
-		display:block;	
-		float:right;	
-		width:30px;	
-		height:30px;		
-		background: url('https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/search-icon.png') no-repeat 4px 4px #fff;	
-		border-right-width: 400px;	
-		border-radius:400px;	
-		border-color:red;	
-	}	
-	.leaflet-control-search .search-button:hover {	
-		background: url('https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/search-icon.png') no-repeat 4px -20px #fafafa;	
-	}	
-	.leaflet-control-search .search-tooltip {	
-		position:absolute;	
-		top:100%;	
-		left:0;	
-		float:left;	
-		list-style: none;	
-		padding-left: 0;	
-		min-width:120px;	
-		max-height:122px;	
-		box-shadow: 1px 1px 6px rgba(0,0,0,0.4);	
-		background-color: rgba(0, 0, 0, 0.25);	
-		z-index:1010;	
-		overflow-y:auto;	
-		overflow-x:hidden;	
-		cursor: pointer;	
-	}	
-	.leaflet-control-search .search-tip {	
-		margin:2px;	
-		padding:2px 4px;	
-		display:block;	
-		color:black;	
-		background: #eee;	
-		border-radius:.25em;	
-		text-decoration:none;		
-		white-space:nowrap;	
-		vertical-align:center;	
-	}	
-	.leaflet-control-search .search-button:hover {	
-		background-color: #f4f4f4;	
-	}	
-	.leaflet-control-search .search-tip-select,	
-	.leaflet-control-search .search-tip:hover {	
-		background-color: #fff;	
-	}	
-	.leaflet-control-search .search-alert {	
-		cursor:pointer;	
-		clear:both;	
-		font-size:.75em;	
-		margin-bottom:5px;	
-		padding:0 .25em;	
-		color:#e00;	
-		font-weight:bold;	
-		border-radius:.25em;
-    }
