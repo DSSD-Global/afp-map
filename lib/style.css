@@ -1,4 +1,4 @@
-/* Add your styles here */	
+ /* Add your styles here */	
 .marker-cluster {	
 	background-clip: padding-box;	
 	border-radius: 20px;	
@@ -51,7 +51,6 @@ html {
 }	
 	
 body {	
-	font-size: 40px;	
 	width: 100%;	
 	height: 100%;	
 	cursor: auto;	
@@ -59,23 +58,21 @@ body {
 }	
 	
 #map {	
-	position: absolute;	
+	position: absolute;
 	top: 0;	
 	right: 0;	
 	left: 0;	
 	bottom: 0;	
-	top: 0;	
-	z-index: 0;	
-}	
+	z-index: 0;
+}		
 	
 .AfPicon {	
-				border-radius:300%;	
-				background-attachment: fixed;	
-				background-position: top left;	
-				position: absolute;	
-				border-width: 30px;	
-				border-height: 30px;	
-		}	
+	border-radius:300%;	
+	background-attachment: fixed;	
+	background-position: top left;	
+	position: absolute;	
+	border-width: 30px;
+}	
 	
 .main-icon-footer {	
   position: absolute;	
@@ -87,7 +84,7 @@ body {
   border-radius: 100%;	
   background: white;	
   border: 1px #ffffff solid;	
-	box-shadow:         0px 2px 0px 0px rgb(204, 186, 186);	
+	box-shadow: 0px 2px 0px 0px rgb(204, 186, 186);	
 }	
 	
 .t{	
@@ -99,11 +96,8 @@ body {
 	
 .leaflet-control-layers {	
 	margin: 10px auto;	
-	width: 300px;	
-	height: 635px;	
 	text-align: left;	
-	overflow-x: auto;
-	overflow-y: auto;
+	overflow: auto;
 }	
 	
 	
@@ -111,12 +105,13 @@ body {
 .sidebar {	
   height: 100%; /* 100% Full-height */	
   width: 0; /* 0 width - change this with JavaScript */	
-  position: fixed; /* Stay in place */	
-  z-index: 1; /* Stay on top */	
+  position: absolute; /* Stay in place */	
+  z-index: 1000; /* Stay on top */	
   top: 0;	
   left: 0;	
   background-color:rgba(255, 255, 255, 0.75);	
-  overflow-x: hidden; /* Disable horizontal scroll */	
+  overflow-x: hidden; /* Disable horizontal scroll */
+  word-wrap: break-word;	
   padding-top: 50px;	
   transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */	
 }		
@@ -259,7 +254,6 @@ body {
 	border-radius:.25em;	
 	text-decoration:none;		
 	white-space:nowrap;	
-	vertical-align:center;	
 }	
 .leaflet-control-search .search-button:hover {	
 	background-color: #f4f4f4;	
@@ -278,4 +272,3 @@ body {
 	font-weight:bold;	
 	border-radius:.25em;
 }
-
