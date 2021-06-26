@@ -123,7 +123,6 @@
     overflow-x: hidden; /* Disable horizontal scroll */
     word-wrap: break-word;	
     padding-top: 50px;	
-    font-size: 4vw !important;
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */	
   }		
     
@@ -147,16 +146,10 @@
     padding: 20px;	
   }	
     
-  /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */	
-  @media screen and (max-width: 450px) {	
-    .sidebar {padding-top: 15px;}	
-    .sidebar a {font-size: 4vw;}	
-  }	
-    
   .org_name {	
     font-family: 'Oswald', sans-serif;	
     text-transform: uppercase;	
-    font-size: 2.5vw;	
+    font-size: 2vw;	
     text-align: center;	
     margin: 10px 20px 10px 20px;	
   }	
@@ -169,20 +162,20 @@
     
   .org_desc {	
     font-family: 'Cardo', serif;	
-    font-size: 2vw;	
+    font-size: 1.5vw;	
     color: #464646;	
     margin: 10px 20px 10px 20px;	
   }	
     
   .org_url {	
     font-family: 'Cardo', serif;	
-    font-size: 2vw;	
+    font-size: 1.5vw;	
     color: #464646;	
     margin: 20px 20px 10px 20px;		
   }	
   
   .org_url > a {
-    font-size: 2vw;
+    font-size: 1.5vw;
   }
   
   .leaflet-control-search.search-exp {/*expanded*/	
@@ -2390,9 +2383,14 @@
   //function to show the sidebar when an organization is clicked
   async function openNav(clicked_marker) {
     await closeNav();
-  
-    document.getElementById("map_sidebar").style.width = "25%";
-  
+    
+    var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    if(viewportWidth > 640) {
+      document.getElementById("map_sidebar").style.width = "25%";
+    }
+    else {
+      document.getElementById("map_sidebar").style.width = "60%";
+    }
     document.getElementById("nav_info").innerHTML = createPopUp(
       clicked_marker["options"]["org_title"],
       afpOrgs[clicked_marker["options"]["org_title"]]
