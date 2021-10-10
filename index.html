@@ -1326,7 +1326,8 @@
   <script>
   
   var config = {
-    "database":"https://spreadsheets.google.com/feeds/list/1Yrtr5Z0Ln5bzW5ezFE7vqNbG818mz_2YX8MdIL_nHwc/1/public/values?alt=json",
+    //"database":"https://spreadsheets.google.com/feeds/list/1Yrtr5Z0Ln5bzW5ezFE7vqNbG818mz_2YX8MdIL_nHwc/1/public/values?alt=json",
+    "database":"https://dssd-global.github.io/afp-map/csvjson_map.json",
     "afpLogo": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1615901170132-RGK6BNXIHQBXWTSRJC7W"',
     "circleMarker": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1622486359541-RBZP9D3LUPCQ3BW05XYF"'
   }
@@ -1876,7 +1877,11 @@
   
     //We care about what's in the "entry" key
     //within the "feed" key
-    let entries = data.feed.entry; //represents a list of objects to loop over
+    //let entries = data.feed.entry; //represents a list of objects to loop over
+
+    console.log(data[1])
+
+    let entries = data;
   
     for (var i = 1; i < entries.length; i++) {
       const entry = entries[i]; 
@@ -1885,18 +1890,17 @@
   
       var orgName = "";
       keys.forEach((key, index) => {
-        if (key.includes("gsx$")) {
-          //store new org titles with empty objects to hold their data
-          if (key === "gsx$_cokwr") {
-            orgName = entry[key]["$t"]; 
+          //store new org titles as keys 
+          if (key === "Organization Name") {
+            orgName = entry[key]; 
             toRet[orgName] = {}; 
           }
           //store org data in the toRet value object corresponding to its title
           else if (toRet[orgName] != undefined) {
-            toRet[orgName][gsxToEnglish[key]] = entry[key]["$t"];
+            toRet[orgName][key] = entry[key];
           }
         }
-      });
+      );
     }
     return toRet;
   }
@@ -2127,7 +2131,7 @@
   //Rule of Law
   var Rule = L.layerGroup();
   
-  //Science / Technology / Digital Acceleration
+  //Science / Technology / Digital Accelera
   var Sci = L.layerGroup();
   
   //Social Justice
