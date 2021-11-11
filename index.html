@@ -1936,20 +1936,12 @@
   
   var all_markers = L.featureGroup();
   //create and color marker clusters based on size
-  var marker_layer = L.markerClusterGroup({
-    iconCreateFunction: function (cluster) {
-      var childCount = cluster.getChildCount();
+  var marker_layer = L.layerGroup({
+ 
+    iconCreateFunction: function () {
       var c = " marker-cluster-";
-      if (childCount < 10) {
-        c += "small";
-      } else if (childCount < 50) {
-        c += "medium";
-      } else {
-        c += "large";
-      }
-  
       return new L.DivIcon({
-        html: "<div><span>" + childCount + "</span></div>",
+        html: "<div><span>" + 10 + "</span></div>",
         className: "marker-cluster" + c,
         iconSize: new L.Point(40, 40),
       });
@@ -1989,7 +1981,8 @@
       var lon = latlon.slice(comma + 1, latlon.length - 1);
       var m = L.marker([lat, lon], { title: "", icon: AfPicon, org_title: key });
       m.bindTooltip(key).openTooltip();
-  
+      
+      //m.addTo(map)
       marker_layer.addLayer(m);
       all_markers.addLayer(m);
     }
