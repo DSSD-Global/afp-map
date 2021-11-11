@@ -1,5 +1,4 @@
 <head>
-
   <link href="https://fonts.googleapis.com/css?family=Cardo:400,700|Oswald" rel="stylesheet">
   
   <meta charset="utf-8">
@@ -286,6 +285,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+  
   
   <script type="text/javascript">
    /*
@@ -1312,16 +1312,22 @@
   
   
   <script src="https://elfalem.github.io/Leaflet.curve/src/leaflet.curve.js"></script>
+  
+  <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){};handleClientLoad()"
+          onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  </script>
   </head>
    
   <body>
     <div id='map'></div>
-  
+    
     <div id="map_sidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div id = "nav_info"></div>
+    
     </div>
-  
+    
   </body>
   <script>
   
@@ -1330,8 +1336,10 @@
     "afpLogo": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1615901170132-RGK6BNXIHQBXWTSRJC7W"',
     "circleMarker": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1622486359541-RBZP9D3LUPCQ3BW05XYF"'
   }
+
+        ///// NOT ACTUALLY USED ANYWHERE IN THE CODE////
   //country names mapped to lat/lon and ISO3 codes
-  var country = {
+  /*var country = {
     "Afghanistan": [[33.7680065, 66.2385139], "AFG"],
     "Aland Islands": [[60.2166218, 19.9438638], "ALA"],
     "Albania": [[41.000028, 19.9999619], "ALB"],
@@ -1582,7 +1590,7 @@
     "Yemen": [[16.3471243, 47.8915271], "YEM"],
     "Zambia": [[-14.5186239, 27.5599164], "ZMB"],
     "Zimbabwe": [[-18.4554963, 29.7468414], "ZWE"]
-  };
+  };*/
   
   //ISO3 codes mapped to lat/lon and country names
   var iso = {
@@ -1919,7 +1927,96 @@
     }
   }
   
+                  /****** CHARLIE'S SHEETS API STUFF **********/
+
+  var columnIndexMapping = {
+    "Organization Name" : 0,
+    "Logo" : 1,
+    "URL" : 2,
+    "Address" : 3,
+    "Country" : 4,
+    "Global North / Global South" : 5,
+    "# of Employees Cleaned": 6,
+    "Funding Structure Clean" : 7,
+    "Categorization (Clean)" : 8,
+    "Region" : 9,
+    "Active In" : 10,
+    "Lat/Lon" : 11,
+    "Descriptions" : 12,
+    "Image URL" : 13
+  }
+                  
+  let DataFromSheets = [];
+  
+  function makeApiCall() {
+    //specify ID of spreadsheet, range of data we want from that spreadsheet
+    var params = {
+      spreadsheetId : '1Vfzjkiib0ZfwszfKoRdedp9QzXMopccnd2OZIwzqxvs',
+      range : 'B2:O136',
+    };
+    //get all the data
+    var request = gapi.client.sheets.spreadsheets.values.get(params);
+      request.then(function(response) {
+        var range = response.result;
+        if (range.values.length > 0) {
+          //for every organization in the spreadsheet
+          for (i = 0; i < range.values.length; i++) {
+            var row = range.values[i];
+            //push the entire row of information
+            DataFromSheets.push(row);
+          }
+          //call function to parse strings, drop dots
+          createMap(DataFromSheets);
+      } 
+      }, function(reason) {
+        console.error('error: ' + reason.result.error.message);
+      });
+  }
+
+
+  async function initClient() {
+    var CLIENT_ID = '459903889875-61v97luptt5b258jvahvffo4nmb85885.apps.googleusercontent.com';
+    var API_KEY = 'AIzaSyD8lCxi6u-p62TJvDKW7AnrQ_jrQuHyMOA';  
+    //scope defined as read-only: data can't be modified in sheet
+    var SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
+    var DISCOVERY_DOCS = ['https://sheets.googleapis.com/$discovery/rest?version=v4'];
+
+      gapi.client.init({
+        'apiKey': API_KEY,
+        'clientId': CLIENT_ID,
+        'scope': SCOPE,
+        'discoveryDocs': DISCOVERY_DOCS,
+        //wait for user to sign in
+      }).then(function() {
+        gapi.auth2.getAuthInstance().isSignedIn.listen(updateSignInStatus);
+        updateSignInStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+      });
+    }
+    //called when page is loaded
+    function handleClientLoad(){
+      gapi.load('client:auth2', initClient);
+    }
+    //if the user signs in to dsc email, make call to sheets api
+    function updateSignInStatus(isSignedIn) {
+      if (isSignedIn) {
+        makeApiCall();
+      }
+    }
+
+    function handleSignInClick(event) {
+      gapi.auth2.getAuthInstance().signIn();
+    }
+
+    function handleSignOutClick(event) {
+      gapi.auth2.getAuthInstance().signOut();
+    }
+
+  
+  
+ 
+
   //attempt to load organizations from the database
+  // NOT USED ANYMORE
   const loadOrganizations = async () => {
     try {
       const res = await fetch(config.database);
@@ -1973,9 +2070,31 @@
   legend.addTo(map);
   
   //create the map with markers and controls
-  const createMap = async () => {
-    await loadOrganizations();
+  function createMap(sheet) {
+    
+    for(count = 0; count < sheet.length; count++){
+      //get lat/long of current organization
+      var currentOrg = sheet[count];
+      var latlon = currentOrg[columnIndexMapping["Lat/Lon"]];
+      var comma = latlon.indexOf(",");
+      var lat = latlon.slice(1, comma);
+      var lon = latlon.slice(comma + 1, latlon.length - 1);
+      //create a marker at given lat/lon for the given organization
+      var m = L.marker([lat, lon], { title: "", icon: AfPicon, org_title: currentOrg[0], info: sheet[count] });
+      m.bindTooltip(currentOrg[0]).openTooltip();
   
+      marker_layer.addLayer(m);
+      all_markers.addLayer(m);
+    }
+    marker_layer.addTo(map);
+    
+  };
+
+
+    
+    /*await loadOrganizations();
+    
+
     for (const [key, value] of Object.entries(afpOrgs)) {
       if (value["Lat/Lon"] != undefined) {
         var latlon = value["Lat/Lon"];
@@ -1993,9 +2112,9 @@
     marker_layer.addTo(map);
     for (const [k, v] of Object.entries(checkboxes)) {
       setOrgsInCategory(k, v);
-    }
-  };
-  createMap();
+    }*/
+  
+  //createMap();
   
   map.zoomControl.setPosition("topright");
   // add the search bar to the map
@@ -2023,19 +2142,20 @@
   function createPopUp(name, info) {
     //Write a function that can create a HTMLElement including org name, logo and blurb
     var customPopup = '<div class = "org_name">' + name + "</div>";
-    if (info["Image URL"] != undefined) {
-      url = "'" + info["Image URL"] + "'";
+    //modified indexing to use columnIndexMapping
+    if (info[columnIndexMapping["Image URL"]] != undefined) {
+      url = "'" + info[columnIndexMapping["Image URL"]] + "'";
       customPopup += '<img class = "org_img" src=' + url + "width='80%'/>";
     }
-    if (info["Description"] != undefined) {
-      customPopup += '<div class = "org_desc">' + info["Description"] + "</div>";
+    if (info[columnIndexMapping["Descriptions"]] != undefined) {
+      customPopup += '<div class = "org_desc">' + info[columnIndexMapping["Descriptions"]] + "</div>";
     }
-    if (info["URL"] != undefined) {
+    if (info[columnIndexMapping["URL"]] != undefined) {
       customPopup +=
         '<div class = "org_url"> Website link: <a href=' +
-        info["URL"] +
+        info[columnIndexMapping["URL"]] +
         ">" +
-        info["URL"] +
+        info[columnIndexMapping["URL"]] +
         "</a></div>";
     }
     return customPopup;
@@ -2189,7 +2309,10 @@
         boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
       }
       boxes += '</div>';
-      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+      //Wasn't successful at replicating code to make seperate div for signin/out buttons,
+      //so I just added them to this div
+      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button><button id='auth_button' onclick='handleSignInClick()'>Sign in</button><button id='signout_button' onclick='handleSignOutClick()'>Sign Out</button></div>";
+      
       return div;
     },
     onRemove: function (map) {
@@ -2392,15 +2515,18 @@
       document.getElementById("map_sidebar").style.width = "60%";
     }
     document.getElementById("nav_info").innerHTML = createPopUp(
+      clicked_marker["options"]["org_title"], clicked_marker["options"]["info"]
+    );
+    /*document.getElementById("nav_info").innerHTML = createPopUp(
       clicked_marker["options"]["org_title"],
       afpOrgs[clicked_marker["options"]["org_title"]]
-    );
+    );*/
     var marker = clicked_marker;
     if (
-      afpOrgs[marker["options"]["org_title"]]["Active In"] != "" &&
-      afpOrgs[marker["options"]["org_title"]]["Active In"] != undefined
+      marker["options"]["info"][columnIndexMapping["Active In"]] != "" &&
+      marker["options"]["info"][columnIndexMapping["Active In"]] != undefined
     ) {
-      var regs = afpOrgs[marker["options"]["org_title"]]["Active In"].split(", ");
+      var regs = marker["options"]["info"][columnIndexMapping["Active In"]].split(", ");
       var regLatLong;
       var LLtoLL;
       var subRegionCurve;
@@ -2447,6 +2573,5 @@
     openNav(clicked_marker);
   });
   
+</script>
   
-  
-  </script>

@@ -29,11 +29,22 @@
       <!-- cms content injection point -->
       <main class="content-container" role="main" data-content-field="main-content">
         <div id="map"></div>
-        <script async
-            // API_KEY_DEV = "AIzaSyCOFjHxlLV233izR1mPXjbqWFc-g2CLSgY";
-            // API_KEY_PROD = "AIzaSyDiAAelt6FrIBrP5U5f5oR3j26KCqdwKdo";
+        <button id="authorize_button" style="display: block;">Authorize</button>
+        <button id="signout_button" style="display: block;">Sign Out</button>
+        <
 
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCOFjHxlLV233izR1mPXjbqWFc-g2CLSgY&callback=initMap">
+        <pre id="content" style="white-space: pre-wrap;"></pre>  
+
+
+        <script async
+            //API_KEY_DEV = "AIzaSyBtBNoyJOiQSDhUrEHZOgTkM1AW9HN05qY";
+            //API_KEY_PROD = "AIzaSyDiAAelt6FrIBrP5U5f5oR3j26KCqdwKdo";
+
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPQx7yks03wJa5DcDkh7Jy9oBkJzpQYsQ&callback=initMap">
+        </script>
+        <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){};handleClientLoad()"
+          onreadystatechange="if (this.readyState === 'complete') this.onload()">
         </script>
       </main>
 

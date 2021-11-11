@@ -14,5 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "leaflet": "^1.7.1"
+
+    
   }
 }
