@@ -1326,7 +1326,8 @@
   <script>
   
   var config = {
-    "database":"https://spreadsheets.google.com/feeds/list/1Yrtr5Z0Ln5bzW5ezFE7vqNbG818mz_2YX8MdIL_nHwc/1/public/values?alt=json",
+    //"database":"https://spreadsheets.google.com/feeds/list/1Yrtr5Z0Ln5bzW5ezFE7vqNbG818mz_2YX8MdIL_nHwc/1/public/values?alt=json",
+    "database":"https://dssd-global.github.io/afp-map/csvjson_map.json",
     "afpLogo": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1615901170132-RGK6BNXIHQBXWTSRJC7W"',
     "circleMarker": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1622486359541-RBZP9D3LUPCQ3BW05XYF"'
   }
@@ -1876,7 +1877,11 @@
   
     //We care about what's in the "entry" key
     //within the "feed" key
-    let entries = data.feed.entry; //represents a list of objects to loop over
+    //let entries = data.feed.entry; //represents a list of objects to loop over
+
+    console.log(data[1])
+
+    let entries = data;
   
     for (var i = 1; i < entries.length; i++) {
       const entry = entries[i]; 
@@ -1885,18 +1890,17 @@
   
       var orgName = "";
       keys.forEach((key, index) => {
-        if (key.includes("gsx$")) {
-          //store new org titles with empty objects to hold their data
-          if (key === "gsx$_cokwr") {
-            orgName = entry[key]["$t"]; 
+          //store new org titles as keys 
+          if (key === "Organization Name") {
+            orgName = entry[key]; 
             toRet[orgName] = {}; 
           }
           //store org data in the toRet value object corresponding to its title
           else if (toRet[orgName] != undefined) {
-            toRet[orgName][gsxToEnglish[key]] = entry[key]["$t"];
+            toRet[orgName][key] = entry[key];
           }
         }
-      });
+      );
     }
     return toRet;
   }
@@ -1932,20 +1936,12 @@
   
   var all_markers = L.featureGroup();
   //create and color marker clusters based on size
-  var marker_layer = L.markerClusterGroup({
-    iconCreateFunction: function (cluster) {
-      var childCount = cluster.getChildCount();
+  var marker_layer = L.layerGroup({
+ 
+    iconCreateFunction: function () {
       var c = " marker-cluster-";
-      if (childCount < 10) {
-        c += "small";
-      } else if (childCount < 50) {
-        c += "medium";
-      } else {
-        c += "large";
-      }
-  
       return new L.DivIcon({
-        html: "<div><span>" + childCount + "</span></div>",
+        html: "<div><span>" + 10 + "</span></div>",
         className: "marker-cluster" + c,
         iconSize: new L.Point(40, 40),
       });
@@ -1985,7 +1981,8 @@
       var lon = latlon.slice(comma + 1, latlon.length - 1);
       var m = L.marker([lat, lon], { title: "", icon: AfPicon, org_title: key });
       m.bindTooltip(key).openTooltip();
-  
+      
+      //m.addTo(map)
       marker_layer.addLayer(m);
       all_markers.addLayer(m);
     }
@@ -2127,7 +2124,7 @@
   //Rule of Law
   var Rule = L.layerGroup();
   
-  //Science / Technology / Digital Acceleration
+  //Science / Technology / Digital Accelera
   var Sci = L.layerGroup();
   
   //Social Justice
