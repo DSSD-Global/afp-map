@@ -1,5 +1,5 @@
 <head>
-
+  <title>AFP Map</title>
   <link href="https://fonts.googleapis.com/css?family=Cardo:400,700|Oswald" rel="stylesheet">
   
   <meta charset="utf-8">
@@ -8,11 +8,6 @@
     document.write('<base href="' + document.location + '" />');
   </script>
   <style>
-    /* Add your styles here */	
-  .marker-cluster {	
-    background-clip: padding-box;	
-    border-radius: 20px;	
-    }	
   .marker-cluster div {	
     width: 30px;	
     height: 30px;	
@@ -25,23 +20,13 @@
     }	
   .marker-cluster span {	
     line-height: 30px;	
-    }	
-  .marker-cluster-small {	
-    background-color: rgba(10, 200, 235, .6);	
-    }	
+    }
   .marker-cluster-small div {	
     background-color: rgba(0, 181, 226, .6);	
-    }	
-  .marker-cluster-medium {	
-    background-color: rgba(10, 125, 205, 0.6);	
-    }	
+    }
   .marker-cluster-medium div {	
     background-color: rgba(0, 119, 200, 0.6);	
-    }	
-    
-  .marker-cluster-large {	
-    background-color: rgba(10, 105, 165, 0.6);	
-    }	
+    }
   .marker-cluster-large div {	
     background-color: rgba(0, 98, 155, 0.6);	
     }	
@@ -74,16 +59,7 @@
     left: 0;	
     bottom: 0;	
     z-index: 0;
-  }		
-    
-  .AfPicon {	
-    border-radius:300%;	
-    background-attachment: fixed;	
-    background-position: top left;	
-    position: absolute;	
-    border-width: 30px;
-  }	
-    
+  }
   .main-icon-footer {	
     position: absolute;	
     display: flex;	
@@ -94,8 +70,8 @@
     border-radius: 100%;	
     background: white;	
     border: 1px #ffffff solid;	
-    box-shadow: 0px 2px 0px 0px rgb(204, 186, 186);	
-  }	
+    box-shadow: 0 2px 0 0 rgb(204, 186, 186);
+  }
     
   .t{	
     padding-top: 1px;	
@@ -139,13 +115,13 @@
   .sidebar .closebtn:hover{	
     color: #a9a9a9;	
   }	
-    
-  /* Style page content - use this if you want to push the page content to the right when you open the side navigation */	
-  #main {	
-    transition: margin-left .5s; /* If you want a transition effect */	
-    padding: 20px;	
-  }	
-    
+
+  /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+  #main {
+    transition: margin-left .5s; /* If you want a transition effect */
+    padding: 20px;
+  }
+
   .org_name {	
     font-family: 'Oswald', sans-serif;	
     text-transform: uppercase;	
@@ -655,7 +631,7 @@
           self.collapseDelayedStop();
           L.DomEvent.stopPropagation(e);//disable zoom map
         }, this)
-        .on(tool, 'mouseover', function(e) {
+        .on(tool, 'mouseover', function(_) {
           self.collapseDelayedStop();
         }, this);
       return tool;
@@ -687,7 +663,7 @@
         L.DomEvent
           .disableClickPropagation(tip)		
           .on(tip, 'click', L.DomEvent.stop, this)
-          .on(tip, 'click', function(e) {
+          .on(tip, 'click', function(_) {
             this._input.value = text;
             this._handleAutoresize();
             this._input.focus();
@@ -1935,19 +1911,9 @@
   };
   
   var all_markers = L.featureGroup();
-  //create and color marker clusters based on size
-  var marker_layer = L.layerGroup({
- 
-    iconCreateFunction: function () {
-      var c = " marker-cluster-";
-      return new L.DivIcon({
-        html: "<div><span>" + 10 + "</span></div>",
-        className: "marker-cluster" + c,
-        iconSize: new L.Point(40, 40),
-      });
-    },
-  });
-  
+  // Create and color markers
+  var marker_layer = L.layerGroup();
+
   var active = L.layerGroup();
   
   //add legend to map
@@ -2315,7 +2281,7 @@
     }
   }
   
-  //attempt to make tooltips on clusters
+  // Create tooltip on marker hover
   let markersInCluster = [];
   let titlesInCluster = [];
   marker_layer.on("clustermouseover", function (e) {
@@ -2438,11 +2404,18 @@
     active.clearLayers();
     return;
   };
-  
-  marker_layer.on("click", function (event) {
-    var clicked_marker = event.layer;
-    openNav(clicked_marker);
-  });
+
+  marker_layer.on('mouseovercluster', onClick);
+
+  function onClick(_){
+    alert('helloooo');
+  }
+
+  // marker_layer.on("click", function (event) {
+  //   console.log('HERE');
+  //   var clicked_marker = event.layer;
+  //   openNav(clicked_marker);
+  // });
   
   
   
