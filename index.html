@@ -281,6 +281,9 @@
     font-weight:bold;	
     border-radius:.25em;
   }
+  .leaflet-top{
+    background-color:rgba(0, 98, 155, 0.6)
+  }
     </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
@@ -2010,6 +2013,23 @@
   
   map.addControl(controlSearch);
   
+  var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
+  var toggle_right_sidebar = document.createElement("button");
+  // toggle_right_sidebar.style.cssText='leaflet-control; position:fixed; left:80px; top:20px; width: 90px; height: 34px;z-index:-1;'
+  toggle_right_sidebar.style.cssText='position: absolute;top: 250;right: 0;z-index: 314159;width: 45px; height: 34px;'
+  toggle_right_sidebar.onclick = function(){
+    if(right_sidebar.style.visibility == 'hidden'){
+          right_sidebar.style.visibility = 'visible';
+          toggle_right_sidebar.innerHTML=">"}
+    else{
+          right_sidebar.style.visibility = 'hidden'
+          toggle_right_sidebar.innerHTML="<"}
+          };
+  right_sidebar.after(toggle_right_sidebar)
+  toggle_right_sidebar.innerHTML=">"
+
+
+
   var AfPicon = new L.divIcon({
     html:
       '<div id="container" class="main-icon-footer "><img src =' +
@@ -2263,7 +2283,9 @@
   
   function hideBoxControl() {
     var div = document.getElementById("box_control");
-    div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+    div.innerHTML = "<div class=t id ='checkboxes' ><button type=button>Filter</button></div>";
+    div.style.cssText='.leaflet-top'
+    div.style.height
   }
   box_control({ position: "topright" }).addTo(map);
   
