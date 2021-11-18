@@ -1593,7 +1593,8 @@
   };*/
   
   //ISO3 codes mapped to lat/lon and country names
-  var iso = {
+  //replaced by call to google sheet w/ same info
+ /* var iso = {
     "AFG": [[33.7680065, 66.2385139], "Afghanistan"],
     "ALA": [[60.2166218, 19.9438638], "Aland Islands"],
     "ALB": [[41.000028, 19.9999619], "Albania"],
@@ -1844,7 +1845,7 @@
     "YEM": [[16.3471243, 47.8915271], "Yemen"],
     "ZMB": [[-14.5186239, 27.5599164], "Zambia"],
     "ZWE": [[-18.4554963, 29.7468414], "Zimbabwe"]
-  };
+  };*/
   
   //mapping of database values to gsx values
   var gsxToEnglish = {
@@ -1879,7 +1880,7 @@
     { noWrap: true }
   ).addTo(map);
   
-  function organizeData(data) {
+  /*function organizeData(data) {
     let toRet = {};
   
     //We care about what's in the "entry" key
@@ -1907,7 +1908,7 @@
       });
     }
     return toRet;
-  }
+  }*/
   
   //adds organizations to layer groups based on their categories
   function setOrgsInCategory(category, group) {
@@ -1929,6 +1930,45 @@
   
                   /****** CHARLIE'S SHEETS API STUFF **********/
 
+
+
+
+  let isoCodesDict = {}
+
+  //This method replaces the big dictionary of iso codes above.
+  function makeApiCallForISOCodes(){
+    var params = {
+      spreadsheetId : '1Z2PSCbO6AKlpV8_wby-Lm0Ww9tpa6NY8R6kRtHSkLLM',
+      range : 'A2:C251'
+    }
+
+    var request = gapi.client.sheets.spreadsheets.values.get(params);
+      request.then(function(response) {
+        var range = response.result;
+        if (range.values.length > 0) {
+          //for every organization in the spreadsheet
+          for (i = 0; i < range.values.length; i++) {
+            var row = range.values[i];
+            var code = row[0];
+            var latlon = row[1];
+            var name = row[2];
+            var comma = latlon.indexOf(",");
+            var lat = latlon.slice(0,comma);
+            var lon = latlon.slice(comma + 1, latlon.length);
+            
+            var latLonArr = [lat,lon];
+            isoCodesDict[code] = [latLonArr,name];
+          }
+          //call function to parse strings, drop dots
+          //createMap(DataFromSheets);
+      } 
+      }, function(reason) {
+        console.error('error: ' + reason.result.error.message);
+      });
+
+
+  }
+
   var columnIndexMapping = {
     "Organization Name" : 0,
     "Logo" : 1,
@@ -1945,10 +1985,10 @@
     "Descriptions" : 12,
     "Image URL" : 13
   }
-                  
+    
   let DataFromSheets = [];
   
-  function makeApiCall() {
+  function makeApiCallForMemberData() {
     //specify ID of spreadsheet, range of data we want from that spreadsheet
     var params = {
       spreadsheetId : '1Vfzjkiib0ZfwszfKoRdedp9QzXMopccnd2OZIwzqxvs',
@@ -1975,8 +2015,7 @@
 
 
   async function initClient() {
-    var CLIENT_ID = '459903889875-61v97luptt5b258jvahvffo4nmb85885.apps.googleusercontent.com';
-    var API_KEY = 'AIzaSyD8lCxi6u-p62TJvDKW7AnrQ_jrQuHyMOA';  
+     
     //scope defined as read-only: data can't be modified in sheet
     var SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
     var DISCOVERY_DOCS = ['https://sheets.googleapis.com/$discovery/rest?version=v4'];
@@ -1988,36 +2027,18 @@
         'discoveryDocs': DISCOVERY_DOCS,
         //wait for user to sign in
       }).then(function() {
-        gapi.auth2.getAuthInstance().isSignedIn.listen(updateSignInStatus);
-        updateSignInStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+        makeApiCallForMemberData();
+        makeApiCallForISOCodes();
       });
     }
     //called when page is loaded
     function handleClientLoad(){
-      gapi.load('client:auth2', initClient);
+      gapi.load('client', initClient);
     }
-    //if the user signs in to dsc email, make call to sheets api
-    function updateSignInStatus(isSignedIn) {
-      if (isSignedIn) {
-        makeApiCall();
-      }
-    }
-
-    function handleSignInClick(event) {
-      gapi.auth2.getAuthInstance().signIn();
-    }
-
-    function handleSignOutClick(event) {
-      gapi.auth2.getAuthInstance().signOut();
-    }
-
-  
-  
- 
-
+    
   //attempt to load organizations from the database
-  // NOT USED ANYMORE - Charlie
-  const loadOrganizations = async () => {
+  // NOT USED ANYMORE
+  /*const loadOrganizations = async () => {
     try {
       const res = await fetch(config.database);
       spreadsheetData = await res.json();
@@ -2025,7 +2046,7 @@
     } catch (err) {
       console.error(err);
     }
-  };
+  };*/
   
   var all_markers = L.featureGroup();
   //create and color marker clusters based on size
@@ -2309,9 +2330,7 @@
         boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
       }
       boxes += '</div>';
-      //Wasn't successful at replicating code to make seperate div for signin/out buttons,
-      //so I just added them to this div
-      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button><button id='auth_button' onclick='handleSignInClick()'>Sign in</button><button id='signout_button' onclick='handleSignOutClick()'>Sign Out</button></div>";
+      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
       
       return div;
     },
@@ -2533,7 +2552,7 @@
       for (const [k, code] of Object.entries(regs)) {
         //access lat long corresponding to iso code and make a marker
   
-        regLatLong = [iso[code][0][0], iso[code][0][1]];
+        regLatLong = [isoCodesDict[code][0][0], isoCodesDict[code][0][1]];
   
         markerLatLong = [marker.getLatLng().lat, marker.getLatLng().lng];
   
@@ -2552,7 +2571,7 @@
           polyLinePathOptions
         );
         m = L.circleMarker(regLatLong, { radius: 6, color: "#6eceb2" });
-        m.bindTooltip(iso[code][1]).openTooltip();
+        m.bindTooltip(isoCodesDict[code][1]).openTooltip();
         active.addLayer(m);
         active.addLayer(subRegionCurve);
       }
