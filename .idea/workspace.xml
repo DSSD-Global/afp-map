@@ -27,6 +27,7 @@
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager">
@@ -49,7 +50,7 @@
       <updated>1633923093535</updated>
       <workItem from="1633923097592" duration="156000" />
       <workItem from="1636673660580" duration="1109000" />
-      <workItem from="1637206031690" duration="4400000" />
+      <workItem from="1637206031690" duration="5620000" />
     </task>
     <servers />
   </component>
@@ -61,7 +62,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/index.html</url>
-          <line>905</line>
+          <line>908</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="2" />
         </line-breakpoint>

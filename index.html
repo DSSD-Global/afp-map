@@ -854,6 +854,9 @@
   // Hold all markers in a layer and then make more layers to hold subsets of markers
   var all_markers = L.featureGroup();
 
+  // Current active organization layer of interest to the user
+  var active = L.layerGroup();
+
   // Create a map in the "map" div, set the view to a given place and zoom
   var map = L.map("map", { renderWorldCopies: false, minZoom: 2 }).setView(
     [0, 0],
@@ -954,6 +957,84 @@
     }
   }
 
+  // Create a HTMLElement including org name, logo and blurb
+  function createPopUp(name, info) {
+    var customPopup = '<div class = "org_name">' + name + "</div>";
+    if (info["Image URL"] !== undefined) {
+      url = "'" + info["Image URL"] + "'";
+      customPopup += '<img class = "org_img" src=' + url + "width='80%'/>";
+    }
+    if (info["Description"] !== undefined) {
+      customPopup += '<div class = "org_desc">' + info["Description"] + "</div>";
+    }
+    if (info["URL"] !== undefined) {
+      customPopup +=
+              '<div class = "org_url"> Website link: <a target="_blank" href=' +
+              info["URL"] +
+              ">" +
+              info["URL"] +
+              "</a></div>";
+    }
+    return customPopup;
+  }
+
+  // Function to show the sidebar when an organization is clicked
+  async function openNav(clicked_marker, key, value) {
+    await closeNav();
+
+    var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    if(viewportWidth > 640) {
+      document.getElementById("map_sidebar").style.width = "25%";
+    }
+    else {
+      document.getElementById("map_sidebar").style.width = "60%";
+    }
+    document.getElementById("nav_info").innerHTML = createPopUp(key, value);
+    // var marker = clicked_marker;
+    // if (
+    //         afpOrgs[marker["options"]["org_title"]]["Active In"] != "" &&
+    //         afpOrgs[marker["options"]["org_title"]]["Active In"] != undefined
+    // ) {
+    //   var regs = afpOrgs[marker["options"]["org_title"]]["Active In"].split(", ");
+    //   var regLatLong;
+    //   var LLtoLL;
+    //   var subRegionCurve;
+    //   for (const [k, code] of Object.entries(regs)) {
+    //     //access lat long corresponding to iso code and make a marker
+    //     regLatLong = [iso[code][0][0], iso[code][0][1]];
+    //
+    //     markerLatLong = [marker.getLatLng().lat, marker.getLatLng().lng];
+    //
+    //     LLtoLL = [markerLatLong, regLatLong];
+    //
+    //     polyLinePathOptions = {
+    //       dashArray: "7",
+    //       opacity: 0.7,
+    //       weight: 1.5,
+    //       color: "#279989",
+    //     };
+    //
+    //     subRegionCurve = bezierCurve(
+    //             markerLatLong,
+    //             regLatLong,
+    //             polyLinePathOptions
+    //     );
+    //     m = L.circleMarker(regLatLong, { radius: 6, color: "#6eceb2" });
+    //     m.bindTooltip(iso[code][1]).openTooltip();
+    //     active.addLayer(m);
+    //     active.addLayer(subRegionCurve);
+    //   }
+    //   map.setZoom(2);
+    //   active.addTo(map);
+    // }
+  }
+
+  //hide the sidebar
+  const closeNav = async () => {
+    document.getElementById("map_sidebar").style.width = "0";
+    active.clearLayers();
+  };
+
   // Create the map with markers and controls
   const createMap = async () => {
 
@@ -979,9 +1060,7 @@
         });
         m.on('click', function(_){
           // Open the sidebar here for the organization we clicked and adjust the map accordingly
-          console.log('hi');
-          console.log(value);
-          createPopUp(key, value);
+          openNav(m, key, value);
         });
 
         // Add this new marker to the feature group or all markers
@@ -1008,26 +1087,7 @@
   
   map.addControl(controlSearch);
   
-  function createPopUp(name, info) {
-    //Write a function that can create a HTMLElement including org name, logo and blurb
-    var customPopup = '<div class = "org_name">' + name + "</div>";
-    if (info["Image URL"] !== undefined) {
-      url = "'" + info["Image URL"] + "'";
-      customPopup += '<img class = "org_img" src=' + url + "width='80%'/>";
-    }
-    if (info["Description"] !== undefined) {
-      customPopup += '<div class = "org_desc">' + info["Description"] + "</div>";
-    }
-    if (info["URL"] !== undefined) {
-      customPopup +=
-        '<div class = "org_url"> Website link: <a href=' +
-        info["URL"] +
-        ">" +
-        info["URL"] +
-        "</a></div>";
-    }
-    return customPopup;
-  }
+
   
   
   //Checkbox filtering
@@ -1341,79 +1401,10 @@
   }
   
   
-  //function to show the sidebar when an organization is clicked
-  async function openNav(clicked_marker) {
-    await closeNav();
-    
-    var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-    if(viewportWidth > 640) {
-      document.getElementById("map_sidebar").style.width = "25%";
-    }
-    else {
-      document.getElementById("map_sidebar").style.width = "60%";
-    }
-    document.getElementById("nav_info").innerHTML = createPopUp(
-      clicked_marker["options"]["org_title"],
-      afpOrgs[clicked_marker["options"]["org_title"]]
-    );
-    var marker = clicked_marker;
-    if (
-      afpOrgs[marker["options"]["org_title"]]["Active In"] != "" &&
-      afpOrgs[marker["options"]["org_title"]]["Active In"] != undefined
-    ) {
-      var regs = afpOrgs[marker["options"]["org_title"]]["Active In"].split(", ");
-      var regLatLong;
-      var LLtoLL;
-      var subRegionCurve;
-      for (const [k, code] of Object.entries(regs)) {
-        //access lat long corresponding to iso code and make a marker
-        regLatLong = [iso[code][0][0], iso[code][0][1]];
-  
-        markerLatLong = [marker.getLatLng().lat, marker.getLatLng().lng];
-  
-        LLtoLL = [markerLatLong, regLatLong];
-  
-        polyLinePathOptions = {
-          dashArray: "7",
-          opacity: 0.7,
-          weight: 1.5,
-          color: "#279989",
-        };
-  
-        subRegionCurve = bezierCurve(
-          markerLatLong,
-          regLatLong,
-          polyLinePathOptions
-        );
-        m = L.circleMarker(regLatLong, { radius: 6, color: "#6eceb2" });
-        m.bindTooltip(iso[code][1]).openTooltip();
-        active.addLayer(m);
-        active.addLayer(subRegionCurve);
-      }
-      map.setZoom(2);
-      active.addTo(map);
-    }
-  }
-  
-  //hide the sidebar
-  const closeNav = async () => {
-    document.getElementById("map_sidebar").style.width = "0";
-    active.clearLayers();
-    return;
-  };
-
-  marker_layer.on('click', onClick);
-
-  function onClick(_){
-    alert('helloooo');
-  }
-
-  // marker_layer.on("click", function (event) {
-  //   console.log('HERE');
-  //   var clicked_marker = event.layer;
-  //   openNav(clicked_marker);
-  // });
 
   
+
+
+
   
   </script>
