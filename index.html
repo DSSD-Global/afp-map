@@ -322,6 +322,7 @@
     "afpLogo": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1615901170132-RGK6BNXIHQBXWTSRJC7W"',
     "circleMarker": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1622486359541-RBZP9D3LUPCQ3BW05XYF"'
   }
+
   //country names mapped to lat/lon and ISO3 codes
   var country = {
     "Afghanistan": [[33.7680065, 66.2385139], "AFG"],
@@ -931,9 +932,7 @@
 
   // Icon that will appear for all organizations
   var afpIcon = new L.divIcon({
-    html: '<div id="container" class="main-icon-footer "><img src =' +
-            config.afpLogo +
-            '", style="width:30px;height:30px;"><div>',
+    html: '<div id="container" class="main-icon-footer "><img src =' + config.afpLogo + '", style="width:30px;height:30px;"><div>',
     className: "AfPicon",
     iconAnchor: [20, 20],
     iconSize: [30, 30],
@@ -978,8 +977,37 @@
     return customPopup;
   }
 
+  //math for making the paths from organizations to their field offices curved
+  function bezierCurve(latLngOne, latLngTwo, pathOptions) {
+    var latlngs = [];
+
+    var latlng1 = latLngOne, latlng2 = latLngTwo;
+
+    var offsetX = latlng2[1] - latlng1[1], offsetY = latlng2[0] - latlng1[0];
+
+    var r = Math.sqrt(Math.pow(offsetX, 2) + Math.pow(offsetY, 2)), theta = Math.atan2(offsetY, offsetX);
+
+    var thetaOffset = 3.14 / 10;
+    if (offsetX < 0) thetaOffset *= -1;
+
+    var r2 = r / 2 / Math.cos(thetaOffset),
+            theta2 = theta + thetaOffset;
+
+    var midpointX = r2 * Math.cos(theta2) + latlng1[1],
+            midpointY = r2 * Math.sin(theta2) + latlng1[0];
+
+    var midpointLatLng = [midpointY, midpointX];
+
+    latlngs.push(latlng1, midpointLatLng, latlng2);
+
+    return L.curve(
+            ["M", latlng1, "Q", midpointLatLng, latlng2],
+            pathOptions
+    );
+  }
+
   // Function to show the sidebar when an organization is clicked
-  async function openNav(clicked_marker, key, value) {
+  async function openNav(key, value) {
     await closeNav();
 
     var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
@@ -1029,15 +1057,63 @@
     // }
   }
 
-  //hide the sidebar
+  // Close the sidebar
   const closeNav = async () => {
     document.getElementById("map_sidebar").style.width = "0";
     active.clearLayers();
   };
 
+  // Connect to related organizations
+  const drawConnections = async (name, info) => {
+    try{
+      // Get the list of places where an organization is active
+      var placesActive = info['Active In'].split(', ');
+
+      if (info["Lat/Lon"] !== undefined) {
+        // Encapsulate the origin marker's latitude and longitude
+        var originLatLon = info["Lat/Lon"];
+        var comma = originLatLon.indexOf(",");
+        var lat = originLatLon.slice(1, comma);
+        var lon = originLatLon.slice(comma + 1, originLatLon.length - 1);
+
+        var listOfMarkers = [];
+        listOfMarkers.push(L.circleMarker([lat, lon]));
+
+        // Iterate through all countries where an organization is active
+        // and plot the corresponding latitudes and longitudes
+        for (let i = 0; i < placesActive.length; i++) {
+
+          // Get the latitude and longitude of the corresponding country
+          var latLon = [iso[placesActive[i]][0][0], iso[placesActive[i]][0][1]];
+
+          // Create a line to connect the new point and the origin point
+          var polyline = L.polyline([[lat, lon], latLon], {color: '#279989'});
+          active.addLayer(polyline);
+
+          // Create marker where the connection is made
+          var m = L.circleMarker(latLon, {radius: 6, color: "#6eceb2"});
+          m.bindTooltip(iso[placesActive[i]][1]);
+          active.addLayer(m);
+
+          // We want to fit to the bound of the markers, so make sure to add this new marker
+          listOfMarkers.push(m);
+        }
+
+        // Display the new active points and the corresponding connections
+        active.addTo(map);
+
+        // Fit to the bounds of the marker list
+        var group = new L.featureGroup(listOfMarkers);
+        map.fitBounds(group.getBounds());
+      }
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
   // Create the map with markers and controls
   const createMap = async () => {
-
     await loadOrganizations();
 
     for (const [key, value] of Object.entries(afpOrgs)) {
@@ -1052,15 +1128,16 @@
         // If we hover, just pull up a small toolip
         // If we click, pull up the sidebar
         m.bindPopup(key);
-        m.on('mouseover', function (e) {
+        m.on('mouseover', function (_) {
           this.openPopup();
         });
-        m.on('mouseout', function (e) {
+        m.on('mouseout', function (_) {
           this.closePopup();
         });
         m.on('click', function(_){
           // Open the sidebar here for the organization we clicked and adjust the map accordingly
-          openNav(m, key, value);
+          openNav(key, value);
+          drawConnections(key, value);
         });
 
         // Add this new marker to the feature group or all markers
@@ -1068,25 +1145,26 @@
       }
     }
 
-    for (const [k, v] of Object.entries(checkboxes)) {
-      setOrgsInCategory(k, v);
-    }
+    // Allow us to orient which markers should appear given what is searched for
+    // for (const [k, v] of Object.entries(checkboxes)) {
+    //   setOrgsInCategory(k, v);
+    // }
   };
   createMap();
   
-  map.zoomControl.setPosition("topright");
-  // add the search bar to the map
-  var controlSearch = new L.Control.Search({
-    position: "topright", // where do you want the search bar?
-    layer: marker_layer, // name of the layer
-    initial: false,
-    zoom: 11, // set zoom to found location when searched
-    marker: false,
-    textPlaceholder: "Search for an organization...", // placeholder while nothing is searched
-  });
-  
-  map.addControl(controlSearch);
-  
+  // map.zoomControl.setPosition("topright");
+  // // add the search bar to the map
+  // var controlSearch = new L.Control.Search({
+  //   position: "topright", // where do you want the search bar?
+  //   layer: marker_layer, // name of the layer
+  //   initial: false,
+  //   zoom: 11, // set zoom to found location when searched
+  //   marker: false,
+  //   textPlaceholder: "Search for an organization...", // placeholder while nothing is searched
+  // });
+  //
+  // map.addControl(controlSearch);
+  //
 
   
   
@@ -1095,310 +1173,278 @@
   
   //Add layers for each category
   //Agriculture / Natural Resource Management / Food Security
-  var Agr = L.layerGroup();
+  // var Agr = L.layerGroup();
+  //
+  // //Arts
+  // var Arts = L.layerGroup();
+  //
+  // //Capacity Building
+  // var Cap = L.layerGroup();
+  //
+  // //Community Development and Engagement / Education
+  // var Comm = L.layerGroup();
+  //
+  // //Conflict Prevention / Management & Resolution
+  // var Con = L.layerGroup();
+  //
+  // //Democracy & Government
+  // var Dem = L.layerGroup();
+  //
+  // //Development
+  // var Dev = L.layerGroup();
+  //
+  // //Diversity / Equity / Inclusion
+  // var Div = L.layerGroup();
+  //
+  // //Economic Development and Policy
+  // var Econ = L.layerGroup();
+  //
+  // //Education
+  // var Edu = L.layerGroup();
+  //
+  // //Emergency / Disaster Response
+  // var Emer = L.layerGroup();
+  //
+  // //Environment / Climate Justice / Conservation / Wildlife
+  // var Env = L.layerGroup();
+  //
+  // //Faith-based / Interreligious Action
+  // var Faith = L.layerGroup();
+  //
+  // //Gender Equality / Women
+  // var Gen = L.layerGroup();
+  //
+  // //Health
+  // var Hea = L.layerGroup();
+  //
+  // //Human Rights
+  // var HRights = L.layerGroup();
+  //
+  // //Humanitarian Aid
+  // var HAid = L.layerGroup();
+  //
+  // //Media & Journalism
+  // var MJ = L.layerGroup();
+  //
+  // //Meditation & Negotiation
+  // var MN = L.layerGroup();
+  //
+  // //Mental Health & Trauma Informed Care
+  // var MH = L.layerGroup();
+  //
+  // //Networks
+  // var Net = L.layerGroup();
+  //
+  // //Peacebuilding
+  // var Peace = L.layerGroup();
+  //
+  // //Philanthropy
+  // var Phil = L.layerGroup();
+  //
+  // //Policy & Advocacy
+  // var Pol = L.layerGroup();
+  //
+  // //Reconciliation
+  // var Rec = L.layerGroup();
+  //
+  // //Research & Evaluation
+  // var Res = L.layerGroup();
+  //
+  // //Rule of Law
+  // var Rule = L.layerGroup();
+  //
+  // //Science / Technology / Digital Accelera
+  // var Sci = L.layerGroup();
+  //
+  // //Social Justice
+  // var Soc = L.layerGroup();
+  //
+  // //US Peacebuilding
+  // var US = L.layerGroup();
+  //
+  // //Youth
+  // var You = L.layerGroup();
+  //
+  // //Other
+  // var Oth = L.layerGroup();
+  //
+  // //Mapping of layer groups to checkbox names
+  // var checkboxes = {
+  //   "Agriculture / Natural Resource Management / Food Security": Agr,
+  //   "Arts": Arts,
+  //   "Capacity Building": Cap,
+  //   "Community Development and Engagement / Education": Comm,
+  //   "Conflict Prevention / Management & Resolution": Con,
+  //   "Democracy & Governance": Dem,
+  //   "Development": Dev,
+  //   "Diversity / Equity / Inclusion": Div,
+  //   "Economic Development & Policy": Econ,
+  //   "Education": Edu,
+  //   "Emergency / Disaster Response": Emer,
+  //   "Environment / Climate Justice / Conservation / Wildlife": Env,
+  //   "Faith-based / Interreligious Action": Faith,
+  //   "Gender Equality / Women": Gen,
+  //   "Health": Hea,
+  //   "Human Rights": HRights,
+  //   "Humanitarian Aid": HAid,
+  //   "Media & Journalism": MJ,
+  //   "Mediation & Negotiation": MN,
+  //   "Mental Health & Trauma Informed Care": MH,
+  //   "Networks": Net,
+  //   "Peacebuilding": Peace,
+  //   "Philanthropy": Phil,
+  //   "Policy & Advocacy": Pol,
+  //   "Reconciliation": Rec,
+  //   "Research & Evaluation": Res,
+  //   "Rule of Law": Rule,
+  //   "Science / Technology / Digital Acceleration": Sci,
+  //   "Social Justice": Soc,
+  //   "US Peacebuilding": US,
+  //   "Youth": You,
+  //   "Other": Oth,
+  //   //"Clusters": {Agr, Arts, Cap, Comm, Con, Dem, Dev, Div, Econ, Edu, Emer, Env, Faith, Gen, Hea, HRights, HAid, MJ, MN, MH, Net, Peace, Phil, Pol, Rec, Res, Rule, Sci, Soc, US, You, Oth} //debug
+  // };
+  //
+  // boxes = "<div class = leaflet-control-layers id = 'checkboxes'>";
+  // L.Control.extend({
+  //   onAdd: function (map) {
+  //     var div = L.DomUtil.create("div", "box_control");
+  //     L.DomEvent.disableClickPropagation(div);
+  //     div.setAttribute("id", "box_control");
+  //     for (const [k, v] of Object.entries(checkboxes)) {
+  //       boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
+  //     }
+  //     boxes += '</div>';
+  //     div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+  //     return div;
+  //   },
+  //   onRemove: function (map) {
+  //     // Nothing to do here
+  //   },
+  // });
+  //
+  // box_control = function (opts) {
+  //   return new L.Control.Checkboxes(opts);
+  // };
+  //
+  // //store values of checkboxes, since they aren't accessible when the checkbox window is closed
+  // var checkboxes_values = {
+  //   "Agriculture / Natural Resource Management / Food Security": false,
+  //   "Arts": false,
+  //   "Capacity Building": false,
+  //   "Community Development and Engagement / Education": false,
+  //   "Conflict Prevention / Management & Resolution": false,
+  //   "Democracy & Governance": false,
+  //   "Development": false,
+  //   "Diversity / Equity / Inclusion": false,
+  //   "Economic Development & Policy": false,
+  //   "Education": false,
+  //   "Emergency / Disaster Response": false,
+  //   "Environment / Climate Justice / Conservation / Wildlife": false,
+  //   "Faith-based / Interreligious Action": false,
+  //   "Gender Equality / Women": false,
+  //   "Health": false,
+  //   "Human Rights": false,
+  //   "Humanitarian Aid": false,
+  //   "Media & Journalism": false,
+  //   "Mediation & Negotiation": false,
+  //   "Mental Health & Trauma Informed Care": false,
+  //   "Networks": false,
+  //   "Peacebuilding": false,
+  //   "Philanthropy": false,
+  //   "Policy & Advocacy": false,
+  //   "Reconciliation": false,
+  //   "Research & Evaluation": false,
+  //   "Rule of Law": false,
+  //   "Science / Technology / Digital Acceleration": false,
+  //   "Social Justice": false,
+  //   "US Peacebuilding": false,
+  //   "Youth": false,
+  //   "Other": false,
+  // };
+  //
+  // //functions to show and hide the checkbox control window
+  // function showBoxControl() {
+  //   var div = document.getElementById("box_control");
+  //   let map_div = document.getElementById("map");
+  //   let map_width = map_div.offsetWidth;
+  //   let map_height = map_div.offsetHeight;
+  //   div.innerHTML = '<form>' + boxes + '</form>';
+  //   div.style.height = map_height-200;
+  //   div.style.width = map_width-10;
+  //   for (const [k, v] of Object.entries(checkboxes)) {
+  //     document.getElementById(k).addEventListener(
+  //       "click",
+  //       () => {
+  //         handleBox(k);
+  //       },
+  //       false
+  //     );
+  //     //set boxes which have a value of true in the storage variable to be checked
+  //     if (checkboxes_values[k]) {
+  //       document.getElementById(k).checked = true;
+  //     }
+  //   }
+  // }
+  //
+  // function hideBoxControl() {
+  //   var div = document.getElementById("box_control");
+  //   div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+  // }
+  // box_control({ position: "topright" }).addTo(map);
+  //
+  // // Filtration closes on mouse click outside of the box
+  // document.addEventListener('click', function(e) {
+  //   e = e || window.event;
+  //   var target = e.target;
+  //   if(e.path[1].className == 't') {
+  //     showBoxControl();
+  //   }
+  //   else if(target.id !== 'checkboxes' && target["type"] !== "checkbox") hideBoxControl();
+  // }, false);
+  //
+  //
+  // // add the event handler
+  // function handleBox(category) {
+  //   //get the box we're handling and set its corresponding value in the values object
+  //   element = document.getElementById(category);
+  //   checkboxes_values[category] = element.checked;
+  //   if (element.checked) {
+  //     //if we are checking the box
+  //     //clear the map and add all the layers that are checked
+  //     marker_layer.clearLayers();
+  //     for (const [k, v] of Object.entries(checkboxes_values)) {
+  //       if (v) marker_layer.addLayer(checkboxes[k]);
+  //     }
+  //   } else {
+  //     //if we are unchecking the box
+  //     //check if we're unchecking the last box
+  //     var no_boxes_checked = true;
+  //     for (const [k, v] of Object.entries(checkboxes_values)) {
+  //       if (v) {
+  //         no_boxes_checked = false;
+  //         break;
+  //       }
+  //     }
+  //     //if we aren't, just remove the layer corresponding to the box
+  //     if (!no_boxes_checked) {
+  //       marker_layer.removeLayer(checkboxes[category]);
+  //       //since some orgs have more than one category, add back the ones
+  //       //that were deleted because they overlapped
+  //       for (const [k, v] of Object.entries(checkboxes)) {
+  //         if (document.getElementById(k).checked) {
+  //           marker_layer.addLayer(v);
+  //         }
+  //       }
+  //     }
+  //     //if we are, show all markers
+  //     else {
+  //       marker_layer.addLayer(all_markers);
+  //     }
+  //   }
+  // }
   
-  //Arts
-  var Arts = L.layerGroup();
-  
-  //Capacity Building
-  var Cap = L.layerGroup();
-  
-  //Community Development and Engagement / Education
-  var Comm = L.layerGroup();
-  
-  //Conflict Prevention / Management & Resolution
-  var Con = L.layerGroup();
-  
-  //Democracy & Government
-  var Dem = L.layerGroup();
-  
-  //Development
-  var Dev = L.layerGroup();
-  
-  //Diversity / Equity / Inclusion
-  var Div = L.layerGroup();
-  
-  //Economic Development and Policy
-  var Econ = L.layerGroup();
-  
-  //Education
-  var Edu = L.layerGroup();
-  
-  //Emergency / Disaster Response
-  var Emer = L.layerGroup();
-  
-  //Environment / Climate Justice / Conservation / Wildlife
-  var Env = L.layerGroup();
-  
-  //Faith-based / Interreligious Action
-  var Faith = L.layerGroup();
-  
-  //Gender Equality / Women
-  var Gen = L.layerGroup();
-  
-  //Health
-  var Hea = L.layerGroup();
-  
-  //Human Rights
-  var HRights = L.layerGroup();
-  
-  //Humanitarian Aid
-  var HAid = L.layerGroup();
-  
-  //Media & Journalism
-  var MJ = L.layerGroup();
-  
-  //Meditation & Negotiation
-  var MN = L.layerGroup();
-  
-  //Mental Health & Trauma Informed Care
-  var MH = L.layerGroup();
-  
-  //Networks
-  var Net = L.layerGroup();
-  
-  //Peacebuilding
-  var Peace = L.layerGroup();
-  
-  //Philanthropy
-  var Phil = L.layerGroup();
-  
-  //Policy & Advocacy
-  var Pol = L.layerGroup();
-  
-  //Reconciliation
-  var Rec = L.layerGroup();
-  
-  //Research & Evaluation
-  var Res = L.layerGroup();
-  
-  //Rule of Law
-  var Rule = L.layerGroup();
-  
-  //Science / Technology / Digital Accelera
-  var Sci = L.layerGroup();
-  
-  //Social Justice
-  var Soc = L.layerGroup();
-  
-  //US Peacebuilding
-  var US = L.layerGroup();
-  
-  //Youth
-  var You = L.layerGroup();
-  
-  //Other
-  var Oth = L.layerGroup();
-  
-  //Mapping of layer groups to checkbox names
-  var checkboxes = {
-    "Agriculture / Natural Resource Management / Food Security": Agr,
-    "Arts": Arts,
-    "Capacity Building": Cap,
-    "Community Development and Engagement / Education": Comm,
-    "Conflict Prevention / Management & Resolution": Con,
-    "Democracy & Governance": Dem,
-    "Development": Dev,
-    "Diversity / Equity / Inclusion": Div,
-    "Economic Development & Policy": Econ,
-    "Education": Edu,
-    "Emergency / Disaster Response": Emer,
-    "Environment / Climate Justice / Conservation / Wildlife": Env,
-    "Faith-based / Interreligious Action": Faith,
-    "Gender Equality / Women": Gen,
-    "Health": Hea,
-    "Human Rights": HRights,
-    "Humanitarian Aid": HAid,
-    "Media & Journalism": MJ,
-    "Mediation & Negotiation": MN,
-    "Mental Health & Trauma Informed Care": MH,
-    "Networks": Net,
-    "Peacebuilding": Peace,
-    "Philanthropy": Phil,
-    "Policy & Advocacy": Pol,
-    "Reconciliation": Rec,
-    "Research & Evaluation": Res,
-    "Rule of Law": Rule,
-    "Science / Technology / Digital Acceleration": Sci,
-    "Social Justice": Soc,
-    "US Peacebuilding": US,
-    "Youth": You,
-    "Other": Oth,
-    //"Clusters": {Agr, Arts, Cap, Comm, Con, Dem, Dev, Div, Econ, Edu, Emer, Env, Faith, Gen, Hea, HRights, HAid, MJ, MN, MH, Net, Peace, Phil, Pol, Rec, Res, Rule, Sci, Soc, US, You, Oth} //debug
-  };
-  
-  boxes = "<div class = leaflet-control-layers id = 'checkboxes'>";
-  L.Control.extend({
-    onAdd: function (map) {
-      var div = L.DomUtil.create("div", "box_control");
-      L.DomEvent.disableClickPropagation(div);
-      div.setAttribute("id", "box_control");
-      for (const [k, v] of Object.entries(checkboxes)) {
-        boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
-      }
-      boxes += '</div>';
-      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
-      return div;
-    },
-    onRemove: function (map) {
-      // Nothing to do here
-    },
-  });
-  
-  box_control = function (opts) {
-    return new L.Control.Checkboxes(opts);
-  };
-  
-  //store values of checkboxes, since they aren't accessible when the checkbox window is closed
-  var checkboxes_values = {
-    "Agriculture / Natural Resource Management / Food Security": false,
-    "Arts": false,
-    "Capacity Building": false,
-    "Community Development and Engagement / Education": false,
-    "Conflict Prevention / Management & Resolution": false,
-    "Democracy & Governance": false,
-    "Development": false,
-    "Diversity / Equity / Inclusion": false,
-    "Economic Development & Policy": false,
-    "Education": false,
-    "Emergency / Disaster Response": false,
-    "Environment / Climate Justice / Conservation / Wildlife": false,
-    "Faith-based / Interreligious Action": false,
-    "Gender Equality / Women": false,
-    "Health": false,
-    "Human Rights": false,
-    "Humanitarian Aid": false,
-    "Media & Journalism": false,
-    "Mediation & Negotiation": false,
-    "Mental Health & Trauma Informed Care": false,
-    "Networks": false,
-    "Peacebuilding": false,
-    "Philanthropy": false,
-    "Policy & Advocacy": false,
-    "Reconciliation": false,
-    "Research & Evaluation": false,
-    "Rule of Law": false,
-    "Science / Technology / Digital Acceleration": false,
-    "Social Justice": false,
-    "US Peacebuilding": false,
-    "Youth": false,
-    "Other": false,
-  };
-  
-  //functions to show and hide the checkbox control window
-  function showBoxControl() {
-    var div = document.getElementById("box_control");
-    let map_div = document.getElementById("map");
-    let map_width = map_div.offsetWidth;
-    let map_height = map_div.offsetHeight;
-    div.innerHTML = '<form>' + boxes + '</form>';
-    div.style.height = map_height-200;
-    div.style.width = map_width-10;
-    for (const [k, v] of Object.entries(checkboxes)) {
-      document.getElementById(k).addEventListener(
-        "click",
-        () => {
-          handleBox(k);
-        },
-        false
-      );
-      //set boxes which have a value of true in the storage variable to be checked
-      if (checkboxes_values[k]) {
-        document.getElementById(k).checked = true;
-      }
-    }
-  }
-  
-  function hideBoxControl() {
-    var div = document.getElementById("box_control");
-    div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
-  }
-  box_control({ position: "topright" }).addTo(map);
-  
-  // Filtration closes on mouse click outside of the box
-  document.addEventListener('click', function(e) {
-    e = e || window.event;
-    var target = e.target;
-    if(e.path[1].className == 't') {
-      showBoxControl();
-    }
-    else if(target.id !== 'checkboxes' && target["type"] !== "checkbox") hideBoxControl();
-  }, false);
-  
-  
-  // add the event handler
-  function handleBox(category) {
-    //get the box we're handling and set its corresponding value in the values object
-    element = document.getElementById(category);
-    checkboxes_values[category] = element.checked;
-    if (element.checked) {
-      //if we are checking the box
-      //clear the map and add all the layers that are checked
-      marker_layer.clearLayers();
-      for (const [k, v] of Object.entries(checkboxes_values)) {
-        if (v) marker_layer.addLayer(checkboxes[k]);
-      }
-    } else {
-      //if we are unchecking the box
-      //check if we're unchecking the last box
-      var no_boxes_checked = true;
-      for (const [k, v] of Object.entries(checkboxes_values)) {
-        if (v) {
-          no_boxes_checked = false;
-          break;
-        }
-      }
-      //if we aren't, just remove the layer corresponding to the box
-      if (!no_boxes_checked) {
-        marker_layer.removeLayer(checkboxes[category]);
-        //since some orgs have more than one category, add back the ones
-        //that were deleted because they overlapped
-        for (const [k, v] of Object.entries(checkboxes)) {
-          if (document.getElementById(k).checked) {
-            marker_layer.addLayer(v);
-          }
-        }
-      }
-      //if we are, show all markers
-      else {
-        marker_layer.addLayer(all_markers);
-      }
-    }
-  }
-  
-  //math for making the paths from organizations to their field offices curved
-  function bezierCurve(latLngOne, latLngTwo, pathOptions) {
-    var latlngs = [];
-  
-    var latlng1 = latLngOne,
-      latlng2 = latLngTwo;
-  
-    var offsetX = latlng2[1] - latlng1[1],
-      offsetY = latlng2[0] - latlng1[0];
-  
-    var r = Math.sqrt(Math.pow(offsetX, 2) + Math.pow(offsetY, 2)),
-      theta = Math.atan2(offsetY, offsetX);
-  
-    var thetaOffset = 3.14 / 10;
-    if (offsetX < 0) thetaOffset *= -1;
-  
-    var r2 = r / 2 / Math.cos(thetaOffset),
-      theta2 = theta + thetaOffset;
-  
-    var midpointX = r2 * Math.cos(theta2) + latlng1[1],
-      midpointY = r2 * Math.sin(theta2) + latlng1[0];
-  
-    var midpointLatLng = [midpointY, midpointX];
-  
-    latlngs.push(latlng1, midpointLatLng, latlng2);
-  
-    var curvedPath = L.curve(
-      ["M", latlng1, "Q", midpointLatLng, latlng2],
-      pathOptions
-    );
-  
-    return curvedPath;
-  }
+
   
   
 
