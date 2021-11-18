@@ -977,35 +977,6 @@
     return customPopup;
   }
 
-  //math for making the paths from organizations to their field offices curved
-  function bezierCurve(latLngOne, latLngTwo, pathOptions) {
-    var latlngs = [];
-
-    var latlng1 = latLngOne, latlng2 = latLngTwo;
-
-    var offsetX = latlng2[1] - latlng1[1], offsetY = latlng2[0] - latlng1[0];
-
-    var r = Math.sqrt(Math.pow(offsetX, 2) + Math.pow(offsetY, 2)), theta = Math.atan2(offsetY, offsetX);
-
-    var thetaOffset = 3.14 / 10;
-    if (offsetX < 0) thetaOffset *= -1;
-
-    var r2 = r / 2 / Math.cos(thetaOffset),
-            theta2 = theta + thetaOffset;
-
-    var midpointX = r2 * Math.cos(theta2) + latlng1[1],
-            midpointY = r2 * Math.sin(theta2) + latlng1[0];
-
-    var midpointLatLng = [midpointY, midpointX];
-
-    latlngs.push(latlng1, midpointLatLng, latlng2);
-
-    return L.curve(
-            ["M", latlng1, "Q", midpointLatLng, latlng2],
-            pathOptions
-    );
-  }
-
   // Function to show the sidebar when an organization is clicked
   async function openNav(key, value) {
     await closeNav();
@@ -1018,43 +989,6 @@
       document.getElementById("map_sidebar").style.width = "60%";
     }
     document.getElementById("nav_info").innerHTML = createPopUp(key, value);
-    // var marker = clicked_marker;
-    // if (
-    //         afpOrgs[marker["options"]["org_title"]]["Active In"] != "" &&
-    //         afpOrgs[marker["options"]["org_title"]]["Active In"] != undefined
-    // ) {
-    //   var regs = afpOrgs[marker["options"]["org_title"]]["Active In"].split(", ");
-    //   var regLatLong;
-    //   var LLtoLL;
-    //   var subRegionCurve;
-    //   for (const [k, code] of Object.entries(regs)) {
-    //     //access lat long corresponding to iso code and make a marker
-    //     regLatLong = [iso[code][0][0], iso[code][0][1]];
-    //
-    //     markerLatLong = [marker.getLatLng().lat, marker.getLatLng().lng];
-    //
-    //     LLtoLL = [markerLatLong, regLatLong];
-    //
-    //     polyLinePathOptions = {
-    //       dashArray: "7",
-    //       opacity: 0.7,
-    //       weight: 1.5,
-    //       color: "#279989",
-    //     };
-    //
-    //     subRegionCurve = bezierCurve(
-    //             markerLatLong,
-    //             regLatLong,
-    //             polyLinePathOptions
-    //     );
-    //     m = L.circleMarker(regLatLong, { radius: 6, color: "#6eceb2" });
-    //     m.bindTooltip(iso[code][1]).openTooltip();
-    //     active.addLayer(m);
-    //     active.addLayer(subRegionCurve);
-    //   }
-    //   map.setZoom(2);
-    //   active.addTo(map);
-    // }
   }
 
   // Close the sidebar
@@ -1087,11 +1021,17 @@
           var latLon = [iso[placesActive[i]][0][0], iso[placesActive[i]][0][1]];
 
           // Create a line to connect the new point and the origin point
-          var polyline = L.polyline([[lat, lon], latLon], {color: '#279989'});
+          polyLinePathOptions = {
+            dashArray: "7",
+            opacity: 0.7,
+            weight: 1.5,
+            color: "#279989",
+          };
+          const polyline = L.polyline([[lat, lon], latLon], polyLinePathOptions);
           active.addLayer(polyline);
 
           // Create marker where the connection is made
-          var m = L.circleMarker(latLon, {radius: 6, color: "#6eceb2"});
+          const m = L.circleMarker(latLon, {radius: 6, color: "#6eceb2"});
           m.bindTooltip(iso[placesActive[i]][1]);
           active.addLayer(m);
 
