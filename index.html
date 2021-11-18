@@ -282,7 +282,8 @@
     border-radius:.25em;
   }
   .leaflet-top{
-    background-color:rgba(0, 98, 155, 0.6)
+    background-color:rgba(0, 98, 155, 0.4);
+    border-radius: 12px;
   }
     </style>
   
@@ -2015,8 +2016,7 @@
   
   var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
   var toggle_right_sidebar = document.createElement("button");
-  // toggle_right_sidebar.style.cssText='leaflet-control; position:fixed; left:80px; top:20px; width: 90px; height: 34px;z-index:-1;'
-  toggle_right_sidebar.style.cssText='position: absolute;top: 250;right: 0;z-index: 314159;width: 45px; height: 34px;'
+  toggle_right_sidebar.style.cssText='position:absolute;top: 240;right:0;z-index: 314159;width: 35px; height: 34px;border-radius: 12px;';
   toggle_right_sidebar.onclick = function(){
     if(right_sidebar.style.visibility == 'hidden'){
           right_sidebar.style.visibility = 'visible';
@@ -2209,7 +2209,7 @@
         boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
       }
       boxes += '</div>';
-      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+      div.innerHTML = "<div class=t id ='checkboxes'><button type=button style=\"height:25px; width:40px;float:left;border-radius: 8px;\">Filter</button></div>";
       return div;
     },
     onRemove: function (map) {
@@ -2264,8 +2264,8 @@
     let map_width = map_div.offsetWidth;
     let map_height = map_div.offsetHeight;
     div.innerHTML = '<form>' + boxes + '</form>';
-    div.style.height = map_height-200;
-    div.style.width = map_width-10;
+    div.style.height = map_height;
+    div.style.width = map_width-1200;
     for (const [k, v] of Object.entries(checkboxes)) {
       document.getElementById(k).addEventListener(
         "click",
@@ -2283,7 +2283,7 @@
   
   function hideBoxControl() {
     var div = document.getElementById("box_control");
-    div.innerHTML = "<div class=t id ='checkboxes' ><button type=button>Filter</button></div>";
+    div.innerHTML = "<div class=t id ='checkboxes' ><button type=button style=\"height:25px; width:40px;float:left;border-radius: 8px;\">Filter</button></div>";
     div.style.cssText='.leaflet-top'
     div.style.height
   }
