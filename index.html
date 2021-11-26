@@ -10,7 +10,7 @@
   <style>
 
   * {	
-      box-sizing: border-box;	
+      box-sizing: border-box;
     margin: 0;	
     padding: 0;	
     font-size: inherit;	
@@ -18,16 +18,16 @@
     
   /** Setting the default font sizes */	
   html {	
-    width: 100%;	
-    height: 100%;	
-    background-color: #555566;	
+    width: 100%;
+    height: 100%;
+    background-color: #555566;
   }	
     
   body {	
-    width: 100%;	
-    height: 100%;	
+    width: 100%;
+    height: 100%;
     cursor: auto;	
-    background-color: #555566;	
+    background-color: #555566;
   }	
     
   #map {	
@@ -242,58 +242,21 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
   
   <script type="text/javascript">
-   /*
-    Name					Data passed			   Description
-  
-    Managed Events:
-     search:locationfound	{latlng, title, layer} fired after moved and show markerLocation
-     search:expanded		{}					   fired after control was expanded
-     search:collapsed		{}					   fired after control was collapsed
-      search:cancel			{}					   fired after cancel button clicked
-  
-    Public methods:
-     setLayer()				L.LayerGroup()         set layer search at runtime
-     showAlert()            'Text message'         show alert message
-     searchText()			'Text searched'        search text by external code
-  */
-  
-  //TODO implement can do research on multiple sources layers and remote		
-  //TODO history: false,		//show latest searches in tooltip		
-  //FIXME option condition problem {autoCollapse: true, markerLocation: true} not show location
-  //FIXME option condition problem {autoCollapse: false }
-  //
-  //TODO here insert function  search inputText FIRST in _recordsCache keys and if not find results.. 
-  //  run one of callbacks search(sourceData,jsonpUrl or options.layer) and run this.showTooltip
-  //
-  //TODO change structure of _recordsCache
-  //	like this: _recordsCache = {"text-key1": {loc:[lat,lng], ..other attributes.. }, {"text-key2": {loc:[lat,lng]}...}, ...}
-  //	in this mode every record can have a free structure of attributes, only 'loc' is required
-  //TODO important optimization!!! always append data in this._recordsCache
-  //  now _recordsCache content is emptied and replaced with new data founded
-  //  always appending data on _recordsCache give the possibility of caching ajax, jsonp and layersearch!
-  //
-  //TODO here insert function  search inputText FIRST in _recordsCache keys and if not find results.. 
-  //  run one of callbacks search(sourceData,jsonpUrl or options.layer) and run this.showTooltip
-  //
-  //TODO change structure of _recordsCache
-  //	like this: _recordsCache = {"text-key1": {loc:[lat,lng], ..other attributes.. }, {"text-key2": {loc:[lat,lng]}...}, ...}
-  //	in this way every record can have a free structure of attributes, only 'loc' is required
-  
-  // (function (factory) {
-  //     if(typeof define === 'function' && define.amd) {
-  //     //AMD
-  //         define(['leaflet'], factory);
-  //     } else if(typeof module !== 'undefined') {
-  //     // Node/CommonJS
-  //         module.exports = factory(require('leaflet'));
-  //     } else {
-  //     // Browser globals
-  //         if(typeof window.L === 'undefined')
-  //             throw 'Leaflet must be loaded first';
-  //         factory(window.L);
-  //     }
-  // })(function (L) {});
-  //
+
+  (function (factory) {
+      if(typeof define === 'function' && define.amd) {
+      //AMD
+          define(['leaflet'], factory);
+      } else if(typeof module !== 'undefined') {
+      // Node/CommonJS
+          module.exports = factory(require('leaflet'));
+      } else {
+      // Browser globals
+          if(typeof window.L === 'undefined')
+              throw 'Leaflet must be loaded first';
+          factory(window.L);
+      }
+  })(function (L) {});
 
   </script>
 
@@ -577,104 +540,41 @@
     "ZWE": [[-18.4554963, 29.7468414], "Zimbabwe"]
   };
 
-  //Add layers for each category
-  //Agriculture / Natural Resource Management / Food Security
+  // Add layers for each category
   var Agr = L.layerGroup();
-
-  //Arts
   var Arts = L.layerGroup();
-
-  //Capacity Building
   var Cap = L.layerGroup();
-
-  //Community Development and Engagement / Education
   var Comm = L.layerGroup();
-
-  //Conflict Prevention / Management & Resolution
   var Con = L.layerGroup();
-
-  //Democracy & Government
   var Dem = L.layerGroup();
-
-  //Development
   var Dev = L.layerGroup();
-
-  //Diversity / Equity / Inclusion
   var Div = L.layerGroup();
-
-  //Economic Development and Policy
   var Econ = L.layerGroup();
-
-  //Education
   var Edu = L.layerGroup();
-
-  //Emergency / Disaster Response
   var Emer = L.layerGroup();
-
-  //Environment / Climate Justice / Conservation / Wildlife
   var Env = L.layerGroup();
-
-  //Faith-based / Interreligious Action
   var Faith = L.layerGroup();
-
-  //Gender Equality / Women
   var Gen = L.layerGroup();
-
-  //Health
   var Hea = L.layerGroup();
-
-  //Human Rights
   var HRights = L.layerGroup();
-
-  //Humanitarian Aid
   var HAid = L.layerGroup();
-
-  //Media & Journalism
   var MJ = L.layerGroup();
-
-  //Meditation & Negotiation
   var MN = L.layerGroup();
-
-  //Mental Health & Trauma Informed Care
   var MH = L.layerGroup();
-
-  //Networks
   var Net = L.layerGroup();
-
-  //Peacebuilding
   var Peace = L.layerGroup();
-
-  //Philanthropy
   var Phil = L.layerGroup();
-
-  //Policy & Advocacy
   var Pol = L.layerGroup();
-
-  //Reconciliation
   var Rec = L.layerGroup();
-
-  //Research & Evaluation
   var Res = L.layerGroup();
-
-  //Rule of Law
   var Rule = L.layerGroup();
-
-  //Science / Technology / Digital Accelera
   var Sci = L.layerGroup();
-
-  //Social Justice
   var Soc = L.layerGroup();
-
-  //US Peacebuilding
   var US = L.layerGroup();
-
-  //Youth
   var You = L.layerGroup();
-
-  //Other
   var Oth = L.layerGroup();
 
-  //Mapping of layer groups to checkbox names
+  // Mapping of layer groups to checkbox names
   var checkboxes = {
     "Agriculture / Natural Resource Management / Food Security": Agr,
     "Arts": Arts,
@@ -710,11 +610,50 @@
     "Other": Oth,
   };
 
+  // Store values in checkboxes, because they are not accessible when the checkbox window is closed.
+  var checkboxes_values = {
+    "Agriculture / Natural Resource Management / Food Security": false,
+    "Arts": false,
+    "Capacity Building": false,
+    "Community Development and Engagement / Education": false,
+    "Conflict Prevention / Management & Resolution": false,
+    "Democracy & Governance": false,
+    "Development": false,
+    "Diversity / Equity / Inclusion": false,
+    "Economic Development & Policy": false,
+    "Education": false,
+    "Emergency / Disaster Response": false,
+    "Environment / Climate Justice / Conservation / Wildlife": false,
+    "Faith-based / Interreligious Action": false,
+    "Gender Equality / Women": false,
+    "Health": false,
+    "Human Rights": false,
+    "Humanitarian Aid": false,
+    "Media & Journalism": false,
+    "Mediation & Negotiation": false,
+    "Mental Health & Trauma Informed Care": false,
+    "Networks": false,
+    "Peacebuilding": false,
+    "Philanthropy": false,
+    "Policy & Advocacy": false,
+    "Reconciliation": false,
+    "Research & Evaluation": false,
+    "Rule of Law": false,
+    "Science / Technology / Digital Acceleration": false,
+    "Social Justice": false,
+    "US Peacebuilding": false,
+    "Youth": false,
+    "Other": false,
+  };
+
   // Populate late with organizations pulled from the spreadsheet
   var afpOrgs = [];
 
   // Hold all markers in a layer and then make more layers to hold subsets of markers
   var all_markers = L.featureGroup();
+
+  // Hold filtered layers of markers
+  var marker_layer = L.featureGroup();
 
   // Current active organization layer of interest to the user
   var active = L.layerGroup();
@@ -730,17 +669,108 @@
   ]);
   map.zoomControl.setPosition("topright");
 
-  // Add a search bar
-  // var controlSearch = new L.Control.Search({
-  //   position: "topright", // where do you want the search bar?
-  //   layer: marker_layer, // name of the layer
-  //   initial: false,
-  //   zoom: 11, // set zoom to found location when searched
-  //   marker: false,
-  //   textPlaceholder: "Search for an organization...", // placeholder while nothing is searched
-  // });
-  //
-  // map.addControl(controlSearch);
+  var boxes = "<div class = leaflet-control-layers id = 'checkboxes'>";
+  L.Control.Checkboxes = L.Control.extend({
+    onAdd: function (_) {
+      var div = L.DomUtil.create("div", "box_control");
+      L.DomEvent.disableClickPropagation(div);
+      div.setAttribute("id", "box_control");
+      for (const [k, v] of Object.entries(checkboxes)) {
+        boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
+      }
+      boxes += '</div>';
+      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+      return div;
+    },
+    onRemove: function (map) {
+      // Nothing to do here
+    },
+  });
+
+  box_control = function (opts) {
+    return new L.Control.Checkboxes(opts);
+  };
+
+  // Show the checkbox control window
+  function showBoxControl() {
+    var div = document.getElementById("box_control");
+    let map_div = document.getElementById("map");
+    let map_width = map_div.offsetWidth;
+    let map_height = map_div.offsetHeight;
+    div.innerHTML = '<form>' + boxes + '</form>';
+    div.style.height = map_height-200;
+    div.style.width = map_width-10;
+    for (const [k, v] of Object.entries(checkboxes)) {
+      document.getElementById(k).addEventListener(
+              "click",
+              () => {
+                handleBox(k);
+              },
+              false
+      );
+      //set boxes which have a value of true in the storage variable to be checked
+      if (checkboxes_values[k]) {
+        document.getElementById(k).checked = true;
+      }
+    }
+  }
+
+  // Hide the checkbox control window
+  function hideBoxControl() {
+    var div = document.getElementById("box_control");
+    div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+  }
+  box_control({ position: "topright" }).addTo(map);
+
+  // Close filter tab on click outside of box
+  document.addEventListener('click', function(e) {
+    var target = e.target;
+    if(e.path[1].className === 't') {
+      showBoxControl();
+    }
+    else if(target.id !== 'checkboxes' && target["type"] !== "checkbox") hideBoxControl();
+  }, false);
+
+
+  // add the event handler
+  function handleBox(category) {
+    //get the box we're handling and set its corresponding value in the values object
+    element = document.getElementById(category);
+    checkboxes_values[category] = element.checked;
+    if (element.checked) {
+      //if we are checking the box
+      //clear the map and add all the layers that are checked
+      marker_layer.clearLayers();
+      for (const [k, v] of Object.entries(checkboxes_values)) {
+        if (v) marker_layer.addLayer(checkboxes[k]);
+      }
+    } else {
+      //if we are unchecking the box
+      //check if we're unchecking the last box
+      var no_boxes_checked = true;
+      for (const [k, v] of Object.entries(checkboxes_values)) {
+        if (v) {
+          no_boxes_checked = false;
+          break;
+        }
+      }
+      //if we aren't, just remove the layer corresponding to the box
+      if (!no_boxes_checked) {
+        marker_layer.removeLayer(checkboxes[category]);
+        //since some orgs have more than one category, add back the ones
+        //that were deleted because they overlapped
+        for (const [k, v] of Object.entries(checkboxes)) {
+          if (document.getElementById(k).checked) {
+            marker_layer.addLayer(v);
+          }
+        }
+      }
+      //if we are, show all markers
+      else {
+        marker_layer.addLayer(all_markers);
+      }
+    }
+  }
 
   // Style how we want the map to look
   L.tileLayer(
@@ -790,7 +820,7 @@
   
   // Create a map legend and add it to the upper right corner of our map
   var legend = L.control({ position: "topright" });
-  legend.onAdd = function (map) {
+  legend.onAdd = function (_) {
     var div = L.DomUtil.create("div", "info legend");
     //representing that the AfP logo markers represent headquarters
     div.innerHTML +=
@@ -931,7 +961,7 @@
         var comma = latlon.indexOf(",");
         var lat = latlon.slice(1, comma);
         var lon = latlon.slice(comma + 1, latlon.length - 1);
-        const m = L.marker([lat, lon], {icon: afpIcon}).addTo(map);
+        const m = L.marker([lat, lon], {icon: afpIcon});
         setOrgsInCategory(m, key, value);
 
         // Handle all mouse events
@@ -952,169 +982,14 @@
 
         // Add this new marker to the feature group or all markers
         all_markers.addLayer(m);
+        marker_layer.addLayer(m);
       }
     }
+
+    marker_layer.addTo(map);
   };
+
   createMap();
-  
-  // // add the search bar to the map
 
 
-  
-  
-  //Checkbox filtering
-  
-  
-
-
-
-  //
-  // boxes = "<div class = leaflet-control-layers id = 'checkboxes'>";
-  // L.Control.extend({
-  //   onAdd: function (map) {
-  //     var div = L.DomUtil.create("div", "box_control");
-  //     L.DomEvent.disableClickPropagation(div);
-  //     div.setAttribute("id", "box_control");
-  //     for (const [k, v] of Object.entries(checkboxes)) {
-  //       boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
-  //     }
-  //     boxes += '</div>';
-  //     div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
-  //     return div;
-  //   },
-  //   onRemove: function (map) {
-  //     // Nothing to do here
-  //   },
-  // });
-  //
-  // box_control = function (opts) {
-  //   return new L.Control.Checkboxes(opts);
-  // };
-  //
-  // //store values of checkboxes, since they aren't accessible when the checkbox window is closed
-  // var checkboxes_values = {
-  //   "Agriculture / Natural Resource Management / Food Security": false,
-  //   "Arts": false,
-  //   "Capacity Building": false,
-  //   "Community Development and Engagement / Education": false,
-  //   "Conflict Prevention / Management & Resolution": false,
-  //   "Democracy & Governance": false,
-  //   "Development": false,
-  //   "Diversity / Equity / Inclusion": false,
-  //   "Economic Development & Policy": false,
-  //   "Education": false,
-  //   "Emergency / Disaster Response": false,
-  //   "Environment / Climate Justice / Conservation / Wildlife": false,
-  //   "Faith-based / Interreligious Action": false,
-  //   "Gender Equality / Women": false,
-  //   "Health": false,
-  //   "Human Rights": false,
-  //   "Humanitarian Aid": false,
-  //   "Media & Journalism": false,
-  //   "Mediation & Negotiation": false,
-  //   "Mental Health & Trauma Informed Care": false,
-  //   "Networks": false,
-  //   "Peacebuilding": false,
-  //   "Philanthropy": false,
-  //   "Policy & Advocacy": false,
-  //   "Reconciliation": false,
-  //   "Research & Evaluation": false,
-  //   "Rule of Law": false,
-  //   "Science / Technology / Digital Acceleration": false,
-  //   "Social Justice": false,
-  //   "US Peacebuilding": false,
-  //   "Youth": false,
-  //   "Other": false,
-  // };
-  //
-  // //functions to show and hide the checkbox control window
-  // function showBoxControl() {
-  //   var div = document.getElementById("box_control");
-  //   let map_div = document.getElementById("map");
-  //   let map_width = map_div.offsetWidth;
-  //   let map_height = map_div.offsetHeight;
-  //   div.innerHTML = '<form>' + boxes + '</form>';
-  //   div.style.height = map_height-200;
-  //   div.style.width = map_width-10;
-  //   for (const [k, v] of Object.entries(checkboxes)) {
-  //     document.getElementById(k).addEventListener(
-  //       "click",
-  //       () => {
-  //         handleBox(k);
-  //       },
-  //       false
-  //     );
-  //     //set boxes which have a value of true in the storage variable to be checked
-  //     if (checkboxes_values[k]) {
-  //       document.getElementById(k).checked = true;
-  //     }
-  //   }
-  // }
-  //
-  // function hideBoxControl() {
-  //   var div = document.getElementById("box_control");
-  //   div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
-  // }
-  // box_control({ position: "topright" }).addTo(map);
-  //
-  // // Filtration closes on mouse click outside of the box
-  // document.addEventListener('click', function(e) {
-  //   e = e || window.event;
-  //   var target = e.target;
-  //   if(e.path[1].className == 't') {
-  //     showBoxControl();
-  //   }
-  //   else if(target.id !== 'checkboxes' && target["type"] !== "checkbox") hideBoxControl();
-  // }, false);
-  //
-  //
-  // // add the event handler
-  // function handleBox(category) {
-  //   //get the box we're handling and set its corresponding value in the values object
-  //   element = document.getElementById(category);
-  //   checkboxes_values[category] = element.checked;
-  //   if (element.checked) {
-  //     //if we are checking the box
-  //     //clear the map and add all the layers that are checked
-  //     marker_layer.clearLayers();
-  //     for (const [k, v] of Object.entries(checkboxes_values)) {
-  //       if (v) marker_layer.addLayer(checkboxes[k]);
-  //     }
-  //   } else {
-  //     //if we are unchecking the box
-  //     //check if we're unchecking the last box
-  //     var no_boxes_checked = true;
-  //     for (const [k, v] of Object.entries(checkboxes_values)) {
-  //       if (v) {
-  //         no_boxes_checked = false;
-  //         break;
-  //       }
-  //     }
-  //     //if we aren't, just remove the layer corresponding to the box
-  //     if (!no_boxes_checked) {
-  //       marker_layer.removeLayer(checkboxes[category]);
-  //       //since some orgs have more than one category, add back the ones
-  //       //that were deleted because they overlapped
-  //       for (const [k, v] of Object.entries(checkboxes)) {
-  //         if (document.getElementById(k).checked) {
-  //           marker_layer.addLayer(v);
-  //         }
-  //       }
-  //     }
-  //     //if we are, show all markers
-  //     else {
-  //       marker_layer.addLayer(all_markers);
-  //     }
-  //   }
-  // }
-  
-
-  
-  
-
-  
-
-
-
-  
   </script>
