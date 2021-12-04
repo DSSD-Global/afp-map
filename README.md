@@ -1,7 +1,7 @@
 # AfP Map
 An interactive map built in Leaflet to display Alliance for Peacebuildings various members across the world.
 
-# Requirements
+## Requirements
 You need to acquire `KEY_ID.txt`, a file added to the `.gitignore` containing the API key and Client ID on two lines. Add this file containing the two secrets to the project root. 
 
 ## Firebase deployment
