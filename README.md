@@ -6,7 +6,7 @@ You need to acquire `KEY_ID.txt`, a file added to the `.gitignore` containing th
 
 ## Firebase deployment
 Make sure to put the Deploy API key and Client ID into `KEY_ID.txt`.      
-Then, follow the steps listed here to deploy: [https://firebase.google.com/docs/hosting](https://firebase.google.com/docs/hosting).
+Then, follow the steps listed here to deploy: [https://firebase.google.com/docs/hosting](https://firebase.google.com/docs/hosting).    
 Finally, navigate to [https://afpmap.web.app/](https://afpmap.web.app/).
 
 ## Making Changes
