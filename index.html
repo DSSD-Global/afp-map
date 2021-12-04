@@ -1394,6 +1394,27 @@
 
   }
 
+  //adds organizations to layer groups based on their categories
+  function setOrgsInCategory(category, group) {
+    layers = all_markers["_layers"];
+    //for (const [key, value] of Object.entries(afpOrgs)) {
+    for(count = 0; count < DataFromSheets.length; count++){
+      var org = DataFromSheets[count];
+      var orgCat = org[columnIndexMapping["Categorization (Clean)"]];
+      if (orgCat != undefined) {
+        var catList = orgCat.split(",");
+        if (layers != undefined && catList.indexOf(category) >= 0) {
+          for (const [k, v] of Object.entries(layers)) {
+            if (v["options"]["org_title"] === org[columnIndexMapping["Organization Name"]]) {
+              group.addLayer(v);
+            }
+          }
+        }
+      }
+    }
+  }
+
+
   //map of column names to column index in google sheet 
   var columnIndexMapping = {
     "Organization Name" : 0,
@@ -1528,6 +1549,10 @@
       all_markers.addLayer(m);
     }
     marker_layer.addTo(map);
+
+    for (const [k, v] of Object.entries(checkboxes)) {
+      setOrgsInCategory(k, v);
+    }
     
   };
   
