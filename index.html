@@ -1908,9 +1908,71 @@
             orgName = entry[key]["$t"]; 
             toRet[orgName] = {}; 
           }
-          //store org data in the toRet value object corresponding to its title
-          else if (toRet[orgName] != undefined) {
-            toRet[orgName][gsxToEnglish[key]] = entry[key]["$t"];
+      } 
+      }, function(reason) {
+        console.error('error: ' + reason.result.error.message);
+      });
+
+  }
+
+  //adds organizations to layer groups based on their categories
+  function setOrgsInCategory(category, group) {
+    layers = all_markers["_layers"];
+    //for (const [key, value] of Object.entries(afpOrgs)) {
+    for(count = 0; count < DataFromSheets.length; count++){
+      var org = DataFromSheets[count];
+      var orgCat = org[columnIndexMapping["Categorization (Clean)"]];
+      if (orgCat != undefined) {
+        var catList = orgCat.split(",");
+        if (layers != undefined && catList.indexOf(category) >= 0) {
+          for (const [k, v] of Object.entries(layers)) {
+            if (v["options"]["org_title"] === org[columnIndexMapping["Organization Name"]]) {
+              group.addLayer(v);
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  //map of column names to column index in google sheet 
+  var columnIndexMapping = {
+    "Organization Name" : 0,
+    "Logo" : 1,
+    "URL" : 2,
+    "Address" : 3,
+    "Country" : 4,
+    "Global North / Global South" : 5,
+    "# of Employees Cleaned": 6,
+    "Funding Structure Clean" : 7,
+    "Categorization (Clean)" : 8,
+    "Region" : 9,
+    "Active In" : 10,
+    "Lat/Lon" : 11,
+    "Descriptions" : 12,
+    "Image URL" : 13
+  }
+    
+  //array to hold information for all AFP organizations
+  let DataFromSheets = [];
+  
+  function makeApiCallForMemberData() {
+    //specify ID of spreadsheet, range of data we want from that spreadsheet
+    var params = {
+      spreadsheetId : '1Vfzjkiib0ZfwszfKoRdedp9QzXMopccnd2OZIwzqxvs',
+      range : 'B2:O136',
+    };
+    //get all the data
+    var request = gapi.client.sheets.spreadsheets.values.get(params);
+      request.then(function(response) {
+        var range = response.result;
+        if (range.values.length > 0) {
+          //for every organization in the spreadsheet
+          for (i = 0; i < range.values.length; i++) {
+            var row = range.values[i];
+            //push the entire row of information
+            DataFromSheets.push(row);
           }
         }
       });
