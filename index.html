@@ -2029,17 +2029,18 @@
   
   var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
   var toggle_right_sidebar = document.createElement("button");
-  toggle_right_sidebar.style.cssText='position:absolute;top: 245;right:10;';
+  toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
   toggle_right_sidebar.classList.add('control_button');
 
   toggle_right_sidebar.onclick = function(){
     if(right_sidebar.style.visibility == 'hidden'){
           right_sidebar.style.visibility = 'visible';
           toggle_right_sidebar.innerHTML=">";
+          toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
         }
     else{
-          right_sidebar.style.visibility = 'hidden'
-          toggle_right_sidebar.innerHTML="<"
+          right_sidebar.style.visibility = 'hidden';
+          toggle_right_sidebar.innerHTML="<";
         }
     };
     
@@ -2228,7 +2229,7 @@
       }
       boxes += '</div>';
       div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
-        style=\"float:left;\">Filter</button></div>";
+        style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
       return div;
     },
     onRemove: function (map) {
@@ -2298,13 +2299,15 @@
         document.getElementById(k).checked = true;
       }
     }
+    toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:450;';
   }
   
   function hideBoxControl() {
     var div = document.getElementById("box_control");
     div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
-        style=\"float:left;\">Filter</button></div>";
+        style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
     div.style.cssText='.leaflet-top'
+    toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
   }
   box_control({ position: "topright" }).addTo(map);
   
