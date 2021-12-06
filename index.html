@@ -239,6 +239,22 @@
       font-weight:bold;
       border-radius:.25em;
     }
+    .leaflet-top{
+      background-color:rgba(0, 98, 155, 0.4);
+      border-radius: 12px;
+      margin: 5px;
+    }
+    .control_button{
+      background-color:#ffffff;
+      border-radius: 12px;
+      width: 35px;
+      height: 34px;
+      z-index: 314159;
+    }
+    .legend{
+      position:relative;
+      left:5px;
+    }
   </style>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
@@ -1433,7 +1449,8 @@
         boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
       }
       boxes += '</div>';
-      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+      div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
+        style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
       return div;
     },
     onRemove: function (map) {
@@ -1452,8 +1469,8 @@
     let map_width = map_div.offsetWidth;
     let map_height = map_div.offsetHeight;
     div.innerHTML = '<form>' + boxes + '</form>';
-    div.style.height = map_height-200;
-    div.style.width = map_width-10;
+    div.style.height = map_height;
+    div.style.width = map_width-1500;
     for (const [k, v] of Object.entries(checkboxes)) {
       document.getElementById(k).addEventListener(
               "click",
@@ -1467,12 +1484,16 @@
         document.getElementById(k).checked = true;
       }
     }
+    toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:450;';
   }
 
   // Hide the checkbox control window
   function hideBoxControl() {
     var div = document.getElementById("box_control");
-    div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+    div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
+        style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
+    div.style.cssText='.leaflet-top'
+    toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
   }
   box_control({ position: "topright" }).addTo(map);
 
@@ -1577,6 +1598,27 @@
   };
   legend.addTo(map);
 
+  // Style our sidebar
+  var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
+  var toggle_right_sidebar = document.createElement("button");
+  toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
+  toggle_right_sidebar.classList.add('control_button');
+
+  toggle_right_sidebar.onclick = function(){
+    if(right_sidebar.style.visibility == 'hidden'){
+      right_sidebar.style.visibility = 'visible';
+      toggle_right_sidebar.innerHTML=">";
+      toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
+    }
+    else{
+      right_sidebar.style.visibility = 'hidden';
+      toggle_right_sidebar.innerHTML="<";
+    }
+  };
+
+  right_sidebar.after(toggle_right_sidebar)
+  toggle_right_sidebar.innerHTML=">"
+
   // Icon that will appear for all organizations
   var afpIcon = new L.divIcon({
     html: '<div id="container" class="main-icon-footer "><img src =' + config.afpLogo + '", style="width:30px;height:30px;"><div>',
@@ -1584,6 +1626,8 @@
     iconAnchor: [20, 20],
     iconSize: [30, 30],
   });
+
+
 
   // Add organizations to layer groups based on their categories
   function setOrgsInCategory(m, currentOrg) {
