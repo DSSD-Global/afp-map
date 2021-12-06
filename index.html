@@ -1404,6 +1404,7 @@
             //put data into map to access when drawing green dashes
             isoCodesDict[code] = [latLonArr,name];
           }
+
       } 
       }, function(reason) {
         console.error('error: ' + reason.result.error.message);
@@ -1545,7 +1546,11 @@
       all_markers.addLayer(m);
     }
     marker_layer.addTo(map);
-    
+
+    for (const [k, v] of Object.entries(checkboxes)) {
+      setOrgsInCategory(k, v);
+    }
+
   };
   
   map.zoomControl.setPosition("topright");
