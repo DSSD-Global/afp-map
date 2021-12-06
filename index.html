@@ -1434,9 +1434,48 @@
           2
   );
   map.setMaxBounds([
-    [100, -200],
-    [-75, 240],
+    [100, -180],
+    [-75, 200],
   ]);
+
+
+  // Style our sidebar
+  var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
+  var toggle_right_sidebar = document.createElement("button");
+  toggle_right_sidebar.style.cssText='position:absolute;top:5;right:130;cursor:pointer;';
+  toggle_right_sidebar.classList.add('control_button');
+
+  toggle_right_sidebar.onclick = function(){
+    if(right_sidebar.style.visibility == 'hidden'){
+      right_sidebar.style.visibility = 'visible';
+      toggle_right_sidebar.innerHTML=">";
+      toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
+    }
+    else{
+      right_sidebar.style.visibility = 'hidden';
+      toggle_right_sidebar.innerHTML="<";
+    }
+  };
+
+  right_sidebar.after(toggle_right_sidebar)
+  toggle_right_sidebar.innerHTML=">"
+
+  // Create a map legend and add it to the upper right corner of our map
+  var legend = L.control({ position: "topright" });
+  legend.onAdd = function (_) {
+    var div = L.DomUtil.create("div", "info legend");
+    //representing that the AfP logo markers represent headquarters
+    div.innerHTML +=
+            "<div style='padding-bottom:5px;overflow:auto;'><img src =" +
+            config.afpLogo +
+            '", style="background-color:white;width:30px;height:30px;padding:5px;border-radius:50%;float:left"><p style="float:right;padding:6px">Headquarters</p></div>';
+
+    div.innerHTML +=
+            "<div style='padding-bottom:5px;overflow:auto;'><img src =" + config.circleMarker + "style='width:30px;height:30px;border-radius:50%;float:left'><p style=\"float:right;padding:6px;padding-right:18px;\">Field Office</p></div>";
+    return div;
+  };
+  legend.addTo(map);
+
   map.zoomControl.setPosition("topright");
 
   var boxes = "<div class = leaflet-control-layers id = 'checkboxes'>";
@@ -1550,7 +1589,7 @@
   // Style how we want the map to look
   L.tileLayer(
           "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-          { noWrap: true }
+          { noWrap: false }
   ).addTo(map);
 
   // Put data from our Google Sheets into an interpretable format
@@ -1582,43 +1621,6 @@
     return toRet;
   }
 
-  // Create a map legend and add it to the upper right corner of our map
-  var legend = L.control({ position: "topright" });
-  legend.onAdd = function (_) {
-    var div = L.DomUtil.create("div", "info legend");
-    //representing that the AfP logo markers represent headquarters
-    div.innerHTML +=
-            "<div style='background-color:white;'><img src =" +
-            config.afpLogo +
-            '", style="width:30px;height:30px;">Headquarters</div>';
-
-    div.innerHTML +=
-            "<div style='background-color:white;'><img src =" + config.circleMarker + "style='width:30px;height:30px;'>Field Office</div>";
-    return div;
-  };
-  legend.addTo(map);
-
-  // Style our sidebar
-  var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
-  var toggle_right_sidebar = document.createElement("button");
-  toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
-  toggle_right_sidebar.classList.add('control_button');
-
-  toggle_right_sidebar.onclick = function(){
-    if(right_sidebar.style.visibility == 'hidden'){
-      right_sidebar.style.visibility = 'visible';
-      toggle_right_sidebar.innerHTML=">";
-      toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
-    }
-    else{
-      right_sidebar.style.visibility = 'hidden';
-      toggle_right_sidebar.innerHTML="<";
-    }
-  };
-
-  right_sidebar.after(toggle_right_sidebar)
-  toggle_right_sidebar.innerHTML=">"
-
   // Icon that will appear for all organizations
   var afpIcon = new L.divIcon({
     html: '<div id="container" class="main-icon-footer "><img src =' + config.afpLogo + '", style="width:30px;height:30px;"><div>',
@@ -1626,8 +1628,6 @@
     iconAnchor: [20, 20],
     iconSize: [30, 30],
   });
-
-
 
   // Add organizations to layer groups based on their categories
   function setOrgsInCategory(m, currentOrg) {
