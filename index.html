@@ -239,6 +239,22 @@
       font-weight:bold;
       border-radius:.25em;
     }
+    .leaflet-top{
+      background-color:rgba(0, 98, 155, 0.4);
+      border-radius: 12px;
+      margin: 5px;
+    }
+    .control_button{
+      background-color:#ffffff;
+      border-radius: 12px;
+      width: 35px;
+      height: 34px;
+      z-index: 314159;
+    }
+    .legend{
+      position:relative;
+      left:5px;
+    }
   </style>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
@@ -1418,9 +1434,48 @@
           2
   );
   map.setMaxBounds([
-    [100, -200],
-    [-75, 240],
+    [100, -180],
+    [-75, 200],
   ]);
+
+
+  // Style our sidebar
+  var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
+  var toggle_right_sidebar = document.createElement("button");
+  toggle_right_sidebar.style.cssText='position:absolute;top:5;right:130;cursor:pointer;';
+  toggle_right_sidebar.classList.add('control_button');
+
+  toggle_right_sidebar.onclick = function(){
+    if(right_sidebar.style.visibility == 'hidden'){
+      right_sidebar.style.visibility = 'visible';
+      toggle_right_sidebar.innerHTML=">";
+      toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
+    }
+    else{
+      right_sidebar.style.visibility = 'hidden';
+      toggle_right_sidebar.innerHTML="<";
+    }
+  };
+
+  right_sidebar.after(toggle_right_sidebar)
+  toggle_right_sidebar.innerHTML=">"
+
+  // Create a map legend and add it to the upper right corner of our map
+  var legend = L.control({ position: "topright" });
+  legend.onAdd = function (_) {
+    var div = L.DomUtil.create("div", "info legend");
+    //representing that the AfP logo markers represent headquarters
+    div.innerHTML +=
+            "<div style='padding-bottom:5px;overflow:auto;'><img src =" +
+            config.afpLogo +
+            '", style="background-color:white;width:30px;height:30px;padding:5px;border-radius:50%;float:left"><p style="float:right;padding:6px">Headquarters</p></div>';
+
+    div.innerHTML +=
+            "<div style='padding-bottom:5px;overflow:auto;'><img src =" + config.circleMarker + "style='width:30px;height:30px;border-radius:50%;float:left'><p style=\"float:right;padding:6px;padding-right:18px;\">Field Office</p></div>";
+    return div;
+  };
+  legend.addTo(map);
+
   map.zoomControl.setPosition("topright");
 
   var boxes = "<div class = leaflet-control-layers id = 'checkboxes'>";
@@ -1433,7 +1488,8 @@
         boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
       }
       boxes += '</div>';
-      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+      div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
+        style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
       return div;
     },
     onRemove: function (map) {
@@ -1452,8 +1508,8 @@
     let map_width = map_div.offsetWidth;
     let map_height = map_div.offsetHeight;
     div.innerHTML = '<form>' + boxes + '</form>';
-    div.style.height = map_height-200;
-    div.style.width = map_width-10;
+    div.style.height = map_height;
+    div.style.width = map_width-1500;
     for (const [k, v] of Object.entries(checkboxes)) {
       document.getElementById(k).addEventListener(
               "click",
@@ -1467,12 +1523,16 @@
         document.getElementById(k).checked = true;
       }
     }
+    toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:450;';
   }
 
   // Hide the checkbox control window
   function hideBoxControl() {
     var div = document.getElementById("box_control");
-    div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+    div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
+        style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
+    div.style.cssText='.leaflet-top'
+    toggle_right_sidebar.style.cssText='position:absolute;top: 5;right:130;';
   }
   box_control({ position: "topright" }).addTo(map);
 
@@ -1529,7 +1589,7 @@
   // Style how we want the map to look
   L.tileLayer(
           "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-          { noWrap: true }
+          { noWrap: false }
   ).addTo(map);
 
   // Put data from our Google Sheets into an interpretable format
@@ -1560,22 +1620,6 @@
 
     return toRet;
   }
-
-  // Create a map legend and add it to the upper right corner of our map
-  var legend = L.control({ position: "topright" });
-  legend.onAdd = function (_) {
-    var div = L.DomUtil.create("div", "info legend");
-    //representing that the AfP logo markers represent headquarters
-    div.innerHTML +=
-            "<div style='background-color:white;'><img src =" +
-            config.afpLogo +
-            '", style="width:30px;height:30px;">Headquarters</div>';
-
-    div.innerHTML +=
-            "<div style='background-color:white;'><img src =" + config.circleMarker + "style='width:30px;height:30px;'>Field Office</div>";
-    return div;
-  };
-  legend.addTo(map);
 
   // Icon that will appear for all organizations
   var afpIcon = new L.divIcon({
