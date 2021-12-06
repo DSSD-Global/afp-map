@@ -1294,255 +1294,41 @@
     "circleMarker": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1622486359541-RBZP9D3LUPCQ3BW05XYF"'
   }
 
-  let afpOrgs = [];
-  // create a map in the "map" div, set the view to a given place and zoom
-  var map = L.map("map", { renderWorldCopies: false, minZoom: 2 }).setView(
-          [0, 0],
-          2
-  );
-  map.setMaxBounds([
-    [100, -180],
-    [-75, 200],
-  ]);
-  L.tileLayer(
-          "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-          { noWrap: false }
-  ).addTo(map);
-
-  //add legend to map
-  var legend = L.control({ position: "topright" });
-
-  legend.onAdd = function (map) {
-    var div = L.DomUtil.create("div", "info legend");
-    //representing that the AfP logo markers represent headquarters
-    div.innerHTML +=
-            "<div style='background-color:white;'><img src =" +
-            config.afpLogo +
-            '", style="width:30px;height:30px;">Headquarters</div>';
-
-    div.innerHTML +=
-            "<div style='background-color:white;'><img src =" + config.circleMarker + "style='width:30px;height:30px;'>Field Office</div>";
-    return div;
-  };
-
-  legend.addTo(map);
-
-  //adds organizations to layer groups based on their categories
-  function setOrgsInCategory(category, group) {
-    layers = all_markers["_layers"];
-    //for (const [key, value] of Object.entries(afpOrgs)) {
-    for(count = 0; count < DataFromSheets.length; count++){
-      var org = DataFromSheets[count];
-      var orgCat = org[columnIndexMapping["Categorization (Clean)"]];
-      if (orgCat != undefined) {
-        var catList = orgCat.split(",");
-        if (layers != undefined && catList.indexOf(category) >= 0) {
-          for (const [k, v] of Object.entries(layers)) {
-            if (v["options"]["org_title"] === org[columnIndexMapping["Organization Name"]]) {
-              group.addLayer(v);
-            }
-          }
-        }
-      }
-    }
-  }
-
-
-  //map of column names to column index in google sheet
-  var columnIndexMapping = {
-    "Organization Name" : 0,
-    "Logo" : 1,
-    "URL" : 2,
-    "Address" : 3,
-    "Country" : 4,
-    "Global North / Global South" : 5,
-    "# of Employees Cleaned": 6,
-    "Funding Structure Clean" : 7,
-    "Categorization (Clean)" : 8,
-    "Region" : 9,
-    "Active In" : 10,
-    "Lat/Lon" : 11,
-    "Descriptions" : 12,
-    "Image URL" : 13
-  }
-
-  var all_markers = L.featureGroup();
-  //create and color marker clusters based on size
-  var marker_layer = L.featureGroup();
-  var active = L.layerGroup();
-
-  //create the map with markers and controls
-  function createMap(sheet) {
-
-    for(count = 0; count < sheet.length; count++){
-      //get lat/long of current organization
-      var currentOrg = sheet[count];
-      var latlon = currentOrg[columnIndexMapping["Lat/Lon"]];
-      var comma = latlon.indexOf(",");
-      var lat = latlon.slice(1, comma);
-      var lon = latlon.slice(comma + 1, latlon.length - 1);
-      //create a marker at given lat/lon for the given organization
-      var m = L.marker([lat, lon], { title: "", icon: AfPicon, org_title: currentOrg[0], info: sheet[count] });
-      m.bindTooltip(currentOrg[0]).openTooltip();
-
-      marker_layer.addLayer(m);
-      all_markers.addLayer(m);
-    }
-    marker_layer.addTo(map);
-
-    for (const [k, v] of Object.entries(checkboxes)) {
-      setOrgsInCategory(k, v);
-    }
-
-  };
-
-  map.zoomControl.setPosition("topright");
-  // add the search bar to the map
-  var controlSearch = new L.Control.Search({
-    position: "topright", // where do you want the search bar?
-    layer: marker_layer, // name of the layer
-    initial: false,
-    zoom: 11, // set zoom to found location when searched
-    marker: false,
-    textPlaceholder: "Search for an organization...", // placeholder while nothing is searched
-  });
-
-  map.addControl(controlSearch);
-
-  var AfPicon = new L.divIcon({
-    html:
-            '<div id="container" class="main-icon-footer "><img src =' +
-            config.afpLogo +
-            '", style="width:30px;height:30px;"><div>',
-    className: "AfPicon",
-    iconAnchor: [20, 20],
-    iconSize: [30, 30],
-  });
-
-  function createPopUp(name, info) {
-    //Write a function that can create a HTMLElement including org name, logo and blurb
-    var customPopup = '<div class = "org_name">' + name + "</div>";
-    //modified indexing to use columnIndexMapping
-    if (info[columnIndexMapping["Image URL"]] != undefined) {
-      url = "'" + info[columnIndexMapping["Image URL"]] + "'";
-      customPopup += '<img class = "org_img" src=' + url + "width='80%'/>";
-    }
-    if (info[columnIndexMapping["Descriptions"]] != undefined) {
-      customPopup += '<div class = "org_desc">' + info[columnIndexMapping["Descriptions"]] + "</div>";
-    }
-    if (info[columnIndexMapping["URL"]] != undefined) {
-      customPopup +=
-              '<div class = "org_url"> Website link: <a href=' +
-              info[columnIndexMapping["URL"]] +
-              ">" +
-              info[columnIndexMapping["URL"]] +
-              "</a></div>";
-    }
-    return customPopup;
-  }
-
-
-  //Checkbox filtering
-
-
-  //Add layers for each category
-  //Agriculture / Natural Resource Management / Food Security
+  // Add layers for each category
   var Agr = L.layerGroup();
-
-  //Arts
   var Arts = L.layerGroup();
-
-  //Capacity Building
   var Cap = L.layerGroup();
-
-  //Community Development and Engagement / Education
   var Comm = L.layerGroup();
-
-  //Conflict Prevention / Management & Resolution
   var Con = L.layerGroup();
-
-  //Democracy & Government
   var Dem = L.layerGroup();
-
-  //Development
   var Dev = L.layerGroup();
-
-  //Diversity / Equity / Inclusion
   var Div = L.layerGroup();
-
-  //Economic Development and Policy
   var Econ = L.layerGroup();
-
-  //Education
   var Edu = L.layerGroup();
-
-  //Emergency / Disaster Response
   var Emer = L.layerGroup();
-
-  //Environment / Climate Justice / Conservation / Wildlife
   var Env = L.layerGroup();
-
-  //Faith-based / Interreligious Action
   var Faith = L.layerGroup();
-
-  //Gender Equality / Women
   var Gen = L.layerGroup();
-
-  //Health
   var Hea = L.layerGroup();
-
-  //Human Rights
   var HRights = L.layerGroup();
-
-  //Humanitarian Aid
   var HAid = L.layerGroup();
-
-  //Media & Journalism
   var MJ = L.layerGroup();
-
-  //Meditation & Negotiation
   var MN = L.layerGroup();
-
-  //Mental Health & Trauma Informed Care
   var MH = L.layerGroup();
-
-  //Networks
   var Net = L.layerGroup();
-
-  //Peacebuilding
   var Peace = L.layerGroup();
-
-  //Philanthropy
   var Phil = L.layerGroup();
-
-  //Policy & Advocacy
   var Pol = L.layerGroup();
-
-  //Reconciliation
   var Rec = L.layerGroup();
-
-  //Research & Evaluation
   var Res = L.layerGroup();
-
-  //Rule of Law
   var Rule = L.layerGroup();
-
-  //Science / Technology / Digital Accelera
   var Sci = L.layerGroup();
-
-  //Social Justice
   var Soc = L.layerGroup();
-
-  //US Peacebuilding
   var US = L.layerGroup();
-
-  //Youth
   var You = L.layerGroup();
-
-  //Other
   var Oth = L.layerGroup();
 
-  //Mapping of layer groups to checkbox names
+  // Mapping of layer groups to checkbox names
   var checkboxes = {
     "Agriculture / Natural Resource Management / Food Security": Agr,
     "Arts": Arts,
@@ -1576,33 +1362,9 @@
     "US Peacebuilding": US,
     "Youth": You,
     "Other": Oth,
-    //"Clusters": {Agr, Arts, Cap, Comm, Con, Dem, Dev, Div, Econ, Edu, Emer, Env, Faith, Gen, Hea, HRights, HAid, MJ, MN, MH, Net, Peace, Phil, Pol, Rec, Res, Rule, Sci, Soc, US, You, Oth} //debug
   };
 
-  boxes = "<div class = leaflet-control-layers id = 'checkboxes'>";
-  L.Control.Checkboxes = L.Control.extend({
-    onAdd: function (map) {
-      var div = L.DomUtil.create("div", "box_control");
-      L.DomEvent.disableClickPropagation(div);
-      div.setAttribute("id", "box_control");
-      for (const [k, v] of Object.entries(checkboxes)) {
-        boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
-      }
-      boxes += '</div>';
-      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
-
-      return div;
-    },
-    onRemove: function (map) {
-      // Nothing to do here
-    },
-  });
-
-  box_control = function (opts) {
-    return new L.Control.Checkboxes(opts);
-  };
-
-  //store values of checkboxes, since they aren't accessible when the checkbox window is closed
+  // Store values in checkboxes, because they are not accessible when the checkbox window is closed.
   var checkboxes_values = {
     "Agriculture / Natural Resource Management / Food Security": false,
     "Arts": false,
@@ -1638,7 +1400,52 @@
     "Other": false,
   };
 
-  //functions to show and hide the checkbox control window
+  // Populate late with organizations pulled from the spreadsheet
+  var afpOrgs = [];
+
+  // Hold all markers in a layer and then make more layers to hold subsets of markers
+  var all_markers = L.featureGroup();
+
+  // Hold filtered layers of markers
+  var marker_layer = L.featureGroup();
+
+  // Current active organization layer of interest to the user
+  var active = L.layerGroup();
+
+  // Create a map in the "map" div, set the view to a given place and zoom
+  var map = L.map("map", { renderWorldCopies: false, minZoom: 2 }).setView(
+          [0, 0],
+          2
+  );
+  map.setMaxBounds([
+    [100, -200],
+    [-75, 240],
+  ]);
+  map.zoomControl.setPosition("topright");
+
+  var boxes = "<div class = leaflet-control-layers id = 'checkboxes'>";
+  L.Control.Checkboxes = L.Control.extend({
+    onAdd: function (_) {
+      var div = L.DomUtil.create("div", "box_control");
+      L.DomEvent.disableClickPropagation(div);
+      div.setAttribute("id", "box_control");
+      for (const [k, v] of Object.entries(checkboxes)) {
+        boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
+      }
+      boxes += '</div>';
+      div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
+      return div;
+    },
+    onRemove: function (map) {
+      // Nothing to do here
+    },
+  });
+
+  box_control = function (opts) {
+    return new L.Control.Checkboxes(opts);
+  };
+
+  // Show the checkbox control window
   function showBoxControl() {
     var div = document.getElementById("box_control");
     let map_div = document.getElementById("map");
@@ -1662,17 +1469,17 @@
     }
   }
 
+  // Hide the checkbox control window
   function hideBoxControl() {
     var div = document.getElementById("box_control");
     div.innerHTML = "<div class=t id ='checkboxes'><button type=button>Filter</button></div>";
   }
   box_control({ position: "topright" }).addTo(map);
 
-  // Filtration closes on mouse click outside of the box
+  // Close filter tab on click outside of box
   document.addEventListener('click', function(e) {
-    e = e || window.event;
     var target = e.target;
-    if(e.path[1].className == 't') {
+    if(e.path[1].className === 't') {
       showBoxControl();
     }
     else if(target.id !== 'checkboxes' && target["type"] !== "checkbox") hideBoxControl();
@@ -1701,7 +1508,7 @@
           break;
         }
       }
-      // if we aren't, just remove the layer corresponding to the box
+      //if we aren't, just remove the layer corresponding to the box
       if (!no_boxes_checked) {
         marker_layer.removeLayer(checkboxes[category]);
         //since some orgs have more than one category, add back the ones
@@ -1712,50 +1519,108 @@
           }
         }
       }
-      // if we are, show all markers
+      //if we are, show all markers
       else {
         marker_layer.addLayer(all_markers);
       }
     }
   }
 
-  //math for making the paths from organizations to their field offices curved
-  function bezierCurve(latLngOne, latLngTwo, pathOptions) {
-    var latlngs = [];
+  // Style how we want the map to look
+  L.tileLayer(
+          "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+          { noWrap: true }
+  ).addTo(map);
 
-    var latlng1 = latLngOne,
-            latlng2 = latLngTwo;
+  // Put data from our Google Sheets into an interpretable format
+  function organizeData(data) {
+    let toRet = {};
 
-    var offsetX = latlng2[1] - latlng1[1],
-            offsetY = latlng2[0] - latlng1[0];
+    let entries = data;
 
-    var r = Math.sqrt(Math.pow(offsetX, 2) + Math.pow(offsetY, 2)),
-            theta = Math.atan2(offsetY, offsetX);
+    for (var i = 1; i < entries.length; i++) {
+      const entry = entries[i];
 
-    var thetaOffset = 3.14 / 10;
-    if (offsetX < 0) thetaOffset *= -1;
+      const keys = Object.keys(entry); //used to loop over this object
 
-    var r2 = r / 2 / Math.cos(thetaOffset),
-            theta2 = theta + thetaOffset;
+      var orgName = "";
+      keys.forEach((key, index) => {
+                //store new org titles as keys
+                if (key === "Organization Name") {
+                  orgName = entry[key];
+                  toRet[orgName] = {};
+                }
+                //store org data in the toRet value object corresponding to its title
+                else if (toRet[orgName] !== undefined) {
+                  toRet[orgName][key] = entry[key];
+                }
+              }
+      );
+    }
 
-    var midpointX = r2 * Math.cos(theta2) + latlng1[1],
-            midpointY = r2 * Math.sin(theta2) + latlng1[0];
-
-    var midpointLatLng = [midpointY, midpointX];
-
-    latlngs.push(latlng1, midpointLatLng, latlng2);
-
-    var curvedPath = L.curve(
-            ["M", latlng1, "Q", midpointLatLng, latlng2],
-            pathOptions
-    );
-
-    return curvedPath;
+    return toRet;
   }
 
+  // Create a map legend and add it to the upper right corner of our map
+  var legend = L.control({ position: "topright" });
+  legend.onAdd = function (_) {
+    var div = L.DomUtil.create("div", "info legend");
+    //representing that the AfP logo markers represent headquarters
+    div.innerHTML +=
+            "<div style='background-color:white;'><img src =" +
+            config.afpLogo +
+            '", style="width:30px;height:30px;">Headquarters</div>';
 
-  //function to show the sidebar when an organization is clicked
-  async function openNav(clicked_marker) {
+    div.innerHTML +=
+            "<div style='background-color:white;'><img src =" + config.circleMarker + "style='width:30px;height:30px;'>Field Office</div>";
+    return div;
+  };
+  legend.addTo(map);
+
+  // Icon that will appear for all organizations
+  var afpIcon = new L.divIcon({
+    html: '<div id="container" class="main-icon-footer "><img src =' + config.afpLogo + '", style="width:30px;height:30px;"><div>',
+    className: "AfPicon",
+    iconAnchor: [20, 20],
+    iconSize: [30, 30],
+  });
+
+  // Add organizations to layer groups based on their categories
+  function setOrgsInCategory(m, currentOrg) {
+    try{
+      var orgCat = currentOrg[columnIndexMapping["Categorization (Clean)"]].split(",");
+      orgCat.forEach((org) => {
+        checkboxes[org].addLayer(m);
+      });
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  // Create a HTMLElement including org name, logo and blurb
+  function createPopUp(name, currentOrg) {
+    var customPopup = '<div class = "org_name">' + name + "</div>";
+    if (currentOrg[columnIndexMapping["Image URL"]] !== undefined) {
+      url = "'" + currentOrg[columnIndexMapping["Image URL"]] + "'";
+      customPopup += '<img class = "org_img" src=' + url + "width='80%'/>";
+    }
+    if (currentOrg[columnIndexMapping["Description"]] !== undefined) {
+      customPopup += '<div class = "org_desc">' + currentOrg[columnIndexMapping["Description"]] + "</div>";
+    }
+    if (currentOrg[columnIndexMapping["URL"]] !== undefined) {
+      customPopup +=
+              '<div class = "org_url"> Website link: <a target="_blank" href=' +
+              currentOrg[columnIndexMapping["URL"]] +
+              ">" +
+              currentOrg[columnIndexMapping["URL"]] +
+              "</a></div>";
+    }
+    return customPopup;
+  }
+
+  // Function to show the sidebar when an organization is clicked
+  async function openNav(key, value) {
     await closeNav();
 
     var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
@@ -1765,80 +1630,131 @@
     else {
       document.getElementById("map_sidebar").style.width = "60%";
     }
-    document.getElementById("nav_info").innerHTML = createPopUp(
-            clicked_marker["options"]["org_title"], clicked_marker["options"]["info"]
-    );
-
-    var marker = clicked_marker;
-    latlon = marker["options"]["info"][columnIndexMapping["Lat/Lon"]]
-    var comma = latlon.indexOf(",");
-    var lat = latlon.slice(1, comma);
-    var lon = latlon.slice(comma + 1, latlon.length - 1);
-    var listOfMarkers = [];
-    listOfMarkers.push(L.circleMarker([lat, lon]));
-
-    if (
-            marker["options"]["info"][columnIndexMapping["Active In"]] != "" &&
-            marker["options"]["info"][columnIndexMapping["Active In"]] != undefined
-    ) {
-      var regs = marker["options"]["info"][columnIndexMapping["Active In"]].split(", ");
-      var regLatLong;
-      var LLtoLL;
-      var subRegionCurve;
-      for (const [k, code] of Object.entries(regs)) {
-        //access lat long corresponding to iso code and make a marker
-
-        regLatLong = [isoCodesDict[code][0][0], isoCodesDict[code][0][1]];
-
-        markerLatLong = [marker.getLatLng().lat, marker.getLatLng().lng];
-
-        LLtoLL = [markerLatLong, regLatLong];
-
-        polyLinePathOptions = {
-          dashArray: "7",
-          opacity: 0.7,
-          weight: 1.5,
-          color: "#279989",
-        };
-
-        subRegionCurve = bezierCurve(
-                markerLatLong,
-                regLatLong,
-                polyLinePathOptions
-        );
-        m = L.circleMarker(regLatLong, { radius: 6, color: "#6eceb2" });
-        m.bindTooltip(isoCodesDict[code][1]).openTooltip();
-        active.addLayer(m);
-        active.addLayer(subRegionCurve);
-
-        listOfMarkers.push(m);
-      }
-      map.setZoom(2);
-      active.addTo(map);
-
-      // Fit to the bounds of the marker list
-      var group = new L.featureGroup(listOfMarkers);
-      map.fitBounds(group.getBounds().pad(0.1));
-    }
+    document.getElementById("nav_info").innerHTML = createPopUp(key, value);
   }
 
-  //hide the sidebar
+  // Close the sidebar
   const closeNav = async () => {
     document.getElementById("map_sidebar").style.width = "0";
     active.clearLayers();
-    return;
   };
 
-  marker_layer.on("click", function (event) {
-    var clicked_marker = event.layer;
-    openNav(clicked_marker);
-  });
+  // Connect to related organizations
+  const drawConnections = async (name, currentOrg) => {
+    try{
+      // Get the list of places where an organization is active
+      var placesActive = currentOrg[columnIndexMapping['Active In']].split(', ');
+
+      if (currentOrg[columnIndexMapping["Lat/Lon"]] !== undefined) {
+        // Encapsulate the origin marker's latitude and longitude
+        var originLatLon = currentOrg[columnIndexMapping["Lat/Lon"]];
+        var comma = originLatLon.indexOf(",");
+        var lat = originLatLon.slice(1, comma);
+        var lon = originLatLon.slice(comma + 1, originLatLon.length - 1);
+
+        var listOfMarkers = [];
+        listOfMarkers.push(L.circleMarker([lat, lon]));
+
+        // Iterate through all countries where an organization is active
+        // and plot the corresponding latitudes and longitudes
+        for (let i = 0; i < placesActive.length; i++) {
+
+          // Get the latitude and longitude of the corresponding country
+          var latLon = [iso[placesActive[i]][0][0], iso[placesActive[i]][0][1]];
+
+          // Create a line to connect the new point and the origin point
+          polyLinePathOptions = {
+            dashArray: "7",
+            opacity: 0.7,
+            weight: 1.5,
+            color: "#279989",
+          };
+          const polyline = L.polyline([[lat, lon], latLon], polyLinePathOptions);
+          active.addLayer(polyline);
+
+          // Create marker where the connection is made
+          const m = L.circleMarker(latLon, {radius: 6, color: "#6eceb2"});
+          m.bindTooltip(iso[placesActive[i]][1]);
+          active.addLayer(m);
+
+          // We want to fit to the bound of the markers, so make sure to add this new marker
+          listOfMarkers.push(m);
+        }
+
+        // Display the new active points and the corresponding connections
+        active.addTo(map);
+
+        // Fit to the bounds of the marker list
+        var group = new L.featureGroup(listOfMarkers);
+        map.fitBounds(group.getBounds().pad(0.1));
+      }
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  // Create the map with markers and controls
+  const createMap = (sheet) =>
+  {
+    for(count = 0; count < sheet.length; count++){
+      var currentOrg = sheet[count];
+      if (currentOrg !== undefined && currentOrg[columnIndexMapping["Lat/Lon"]]!== undefined) {
+        var latlon = currentOrg[columnIndexMapping["Lat/Lon"]];
+        var comma = latlon.indexOf(",");
+        var lat = latlon.slice(1, comma);
+        var lon = latlon.slice(comma + 1, latlon.length - 1);
+        var currentOrgName = currentOrg[columnIndexMapping["Organization Name"]];
+
+        const m = L.marker([lat, lon], {icon: afpIcon});
+        m.currentOrgName = currentOrgName;
+        m.currentOrg = currentOrg;
+
+        // Handle all mouse events
+
+        // Create a tooltip with just the organizations
+        m.bindTooltip(currentOrgName);
+
+        // Open the sidebar here for the organization we clicked and adjust the map accordingly
+        m.on('click', function(_){
+          openNav(m.currentOrgName, m.currentOrg);
+          drawConnections(m.currentOrgName, m.currentOrg);
+        });
+
+        setOrgsInCategory(m, currentOrg);
+
+        // Add this new marker to the feature group or all markers
+        all_markers.addLayer(m);
+        marker_layer.addLayer(m);
+      }
+    }
+
+    marker_layer.addTo(map);
+  };
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  //dictionary mapping iso codes to lat/lng and names of countries
-  let isoCodesDict = {}
+  // Dictionary mapping iso codes to lat/lng and names of countries
+  let iso = {}
+
+  // Map of column names to column index in google sheet
+  var columnIndexMapping = {
+    "Organization Name" : 0,
+    "Logo" : 1,
+    "URL" : 2,
+    "Address" : 3,
+    "Country" : 4,
+    "Global North / Global South" : 5,
+    "# of Employees Cleaned": 6,
+    "Funding Structure Clean" : 7,
+    "Categorization (Clean)" : 8,
+    "Region" : 9,
+    "Active In" : 10,
+    "Lat/Lon" : 11,
+    "Descriptions" : 12,
+    "Image URL" : 13
+  }
 
   //This method replaces the big hardcoded dictionary of iso codes
   function makeApiCallForISOCodes(){
@@ -1871,7 +1787,7 @@
           //construct array to hold lat/long values
           var latLonArr = [lat, lon];
           //put data into map to access when drawing green dashes
-          isoCodesDict[code] = [latLonArr,name];
+          iso[code] = [latLonArr,name];
         }
       }
     }, function(reason) {
