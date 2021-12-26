@@ -531,7 +531,7 @@
     // Close filter tab on click outside of box
     document.addEventListener('click', function (e) {
         var target = e.target;
-        if (e.path[1].className === 't') {
+        if (e.composedPath()[1].className === 't') {
             showBoxControl();
         } else if (target.id !== 'checkboxes' && target["type"] !== "checkbox") hideBoxControl();
     }, false);
