@@ -301,8 +301,9 @@
 
 </body>
 <script>
-    var config = {
-        "afpLogo": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1615901170132-RGK6BNXIHQBXWTSRJC7W"',
+    var config = { //old one (circle logo) is commented out. To swich, use that one and change the sizing in divIcon object below. May want to reuse main-cion-footer 
+      "afpLogo": '"https://static1.squarespace.com/static/5db70e83fc0a966cf4cc42ea/t/61d34f9513864f5f081fc7a6/1641238421085/map+icon_2_cropped.png"',
+      //"afpLogo": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1615901170132-RGK6BNXIHQBXWTSRJC7W"',
         "circleMarker": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1622486359541-RBZP9D3LUPCQ3BW05XYF"'
     }
 
@@ -614,9 +615,10 @@
 
     // Icon that will appear for all organizations
     var afpIcon = new L.divIcon({
-        html: '<div id="container" class="main-icon-footer "><img src =' + config.afpLogo + '", style="width:30px;height:30px;"><div>',
+        html: '<img src =' + config.afpLogo + '", style="width:40px;height:50px;"><div>',
         className: "AfPicon",
-        iconAnchor: [20, 20],
+      
+        iconAnchor: [20, 50], //offset so the tip will point at geolocation
         iconSize: [30, 30],
     });
 
