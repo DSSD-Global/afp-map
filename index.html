@@ -61,10 +61,11 @@
             height: 30px;
             text-align: right;
         }
-
+        /* this is the checkbox list*/
         .leaflet-control-layers {
             margin: 10px auto;
             text-align: left;
+            height: 70vh; 
             overflow: auto;
         }
 
@@ -127,7 +128,7 @@
 
         .org_url {
             font-family: 'Cardo', serif;
-            font-size: 1.25vw;
+            font-size: 1.15vw;
             color: #464646;
             margin: 20px 20px 10px 20px;
         }
@@ -259,6 +260,7 @@
             border-radius: 12px;
             margin: 5px;
         }
+     
 
         .control_button {
             background-color: #ffffff;
@@ -475,6 +477,8 @@
         onAdd: function (_) {
             var div = L.DomUtil.create("div", "box_control");
             L.DomEvent.disableClickPropagation(div);
+            L.DomEvent.disableScrollPropagation(div);
+           
             div.setAttribute("id", "box_control");
             for (const [k, v] of Object.entries(checkboxes)) {
                 boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
@@ -502,6 +506,7 @@
         div.innerHTML = '<form>' + boxes + '</form>';
         div.style.height = map_height;
         div.style.width = map_width - 1500;
+    
         for (const [k, v] of Object.entries(checkboxes)) {
             document.getElementById(k).addEventListener(
                 "click",
@@ -524,7 +529,7 @@
         div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
         style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
         div.style.cssText = '.leaflet-top'
-        toggle_right_sidebar.style.cssText = 'position:absolute;top: 5;right:130;';
+        toggle_right_sidebar.style.cssText = 'position:absolute;top: 5;';
     }
 
     box_control({position: "topright"}).addTo(map);
