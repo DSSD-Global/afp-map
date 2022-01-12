@@ -65,7 +65,7 @@
         .leaflet-control-layers {
             margin: 10px auto;
             text-align: left;
-            height: 70vh; 
+            height: 70vh;
             overflow: auto;
             font-family: 'Oswald', serif;
         }
@@ -261,7 +261,7 @@
             border-radius: 12px;
             margin: 5px;
         }
-     
+
 
         .control_button {
             background-color: #ffffff;
@@ -269,6 +269,39 @@
             width: 35px;
             height: 34px;
             z-index: 314159;
+        }
+
+        .toggle_button_open {
+            position:absolute;
+            top:5px;
+            right:135px;
+            cursor:pointer;
+        }
+        .toggle_button_closed {
+            position:absolute;
+            top:5px;
+            right:10px;
+            cursor:pointer;
+        }
+
+        .toggle_button_filter{
+            position:absolute;
+            top: 5px;
+            right:360px;
+        }
+
+        .filter_button{
+            float:left;
+            margin-bottom:5px;
+        }
+
+        .afp_icon{
+            background-color:white;
+            width:30px;
+            height:30px;
+            padding:5px;
+            border-radius:50%;
+            float:left;
         }
 
         .legend {
@@ -304,7 +337,7 @@
 
 </body>
 <script>
-    var config = { //old one (circle logo) is commented out. To swich, use that one and change the sizing in divIcon object below. May want to reuse main-cion-footer 
+    var config = { //old one (circle logo) is commented out. To swich, use that one and change the sizing in divIcon object below. May want to reuse main-cion-footer
       "afpLogo": '"https://static1.squarespace.com/static/5db70e83fc0a966cf4cc42ea/t/61d34f9513864f5f081fc7a6/1641238421085/map+icon_2_cropped.png"',
       //"afpLogo": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1615901170132-RGK6BNXIHQBXWTSRJC7W"',
         "circleMarker": '"https://images.squarespace-cdn.com/content/5db70e83fc0a966cf4cc42ea/1622486359541-RBZP9D3LUPCQ3BW05XYF"'
@@ -438,17 +471,19 @@
     // Style our sidebar
     var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
     var toggle_right_sidebar = document.createElement("button");
-    toggle_right_sidebar.style.cssText = 'position:absolute;top:5;right:130;cursor:pointer;';
-    toggle_right_sidebar.classList.add('control_button');
+    toggle_right_sidebar.classList.add('control_button','toggle_button_open');
 
     toggle_right_sidebar.onclick = function () {
         if (right_sidebar.style.visibility == 'hidden') {
             right_sidebar.style.visibility = 'visible';
             toggle_right_sidebar.innerHTML = ">";
-            toggle_right_sidebar.style.cssText = 'position:absolute;top: 5;right:130;';
+            toggle_right_sidebar.classList.remove('toggle_button_closed');
+            toggle_right_sidebar.classList.add('toggle_button_open');
         } else {
             right_sidebar.style.visibility = 'hidden';
             toggle_right_sidebar.innerHTML = "<";
+            toggle_right_sidebar.classList.remove('toggle_button_open');
+            toggle_right_sidebar.classList.add('toggle_button_closed');
         }
     };
 
@@ -463,7 +498,7 @@
         div.innerHTML +=
             "<div style='padding-bottom:5px;overflow:auto;'><img src =" +
             config.afpLogo +
-            '", style="background-color:white;width:30px;height:30px;padding:5px;border-radius:50%;float:left"><p style="float:right;padding:6px">Headquarters</p></div>';
+            '", class = "afp_icon"><p style="float:right;padding:6px">Headquarters</p></div>';
 
         div.innerHTML +=
             "<div style='padding-bottom:5px;overflow:auto;'><img src =" + config.circleMarker + "style='width:30px;height:30px;border-radius:50%;float:left'><p style=\"float:right;padding:6px;padding-right:18px;\">Field Office</p></div>";
@@ -479,14 +514,13 @@
             var div = L.DomUtil.create("div", "box_control");
             L.DomEvent.disableClickPropagation(div);
             L.DomEvent.disableScrollPropagation(div);
-           
+
             div.setAttribute("id", "box_control");
             for (const [k, v] of Object.entries(checkboxes)) {
                 boxes += '<input id="' + k + '" type="checkbox">' + k + " </input><br/>";
             }
             boxes += '</div>';
-            div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
-        style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
+            div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button filter_button\" \>Filter</button></div>";
             return div;
         },
         onRemove: function (map) {
@@ -507,7 +541,7 @@
         div.innerHTML = '<form>' + boxes + '</form>';
         div.style.height = map_height;
         div.style.width = map_width - 1500;
-    
+
         for (const [k, v] of Object.entries(checkboxes)) {
             document.getElementById(k).addEventListener(
                 "click",
@@ -521,16 +555,17 @@
                 document.getElementById(k).checked = true;
             }
         }
-        toggle_right_sidebar.style.cssText = 'position:absolute;top: 5;right:450;';
+        toggle_right_sidebar.classList.remove("toggle_button_open")
+        toggle_right_sidebar.classList.add("toggle_button_filter")
     }
 
     // Hide the checkbox control window
     function hideBoxControl() {
         var div = document.getElementById("box_control");
-        div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button\" \
-        style=\"float:left;margin-bottom:5px;\">Filter</button></div>";
+        div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"control_button filter_button\">Filter</button></div>";
         div.style.cssText = '.leaflet-top'
-        toggle_right_sidebar.style.cssText = 'position:absolute;top: 5;';
+        toggle_right_sidebar.classList.remove("toggle_button_filter")
+        toggle_right_sidebar.classList.add("toggle_button_open")
     }
 
     box_control({position: "topright"}).addTo(map);
@@ -538,7 +573,7 @@
     // Close filter tab on click outside of box
     document.addEventListener('click', function (e) {
         var target = e.target;
-        if (e.path[1].className === 't') {
+        if (e.composedPath()[1].className === 't') {
             showBoxControl();
         } else if (target.id !== 'checkboxes' && target["type"] !== "checkbox") hideBoxControl();
     }, false);
@@ -623,7 +658,7 @@
     var afpIcon = new L.divIcon({
         html: '<img src =' + config.afpLogo + '", style="width:40px;height:50px;"><div>',
         className: "AfPicon",
-      
+
         iconAnchor: [20, 50], //offset so the tip will point at geolocation
         iconSize: [30, 30],
     });
