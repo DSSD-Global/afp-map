@@ -64,11 +64,10 @@
 
         /* this is the checkbox list*/
         .leaflet-control-layers {
-            margin: 10px;
             text-align: left;
             width: 20vw;
-            height: 70vh;
-            overflow: auto;
+            height: calc(75vh - 200px);
+            overflow-y: scroll;
             font-family: 'Oswald', serif;
         }
 
@@ -502,12 +501,12 @@
         var div = L.DomUtil.create("div", "info legend");
         //representing that the AfP logo markers represent headquarters
         div.innerHTML +=
-            "<div style='overflow:auto;margin-top:20px'><img src =" +
+            "<div style='text-align: left;overflow:auto;margin-top:20px'><img src =" +
             config.afpLogo +
             '", class = "afp_icon"><p style="float:right;padding:6px;padding-top:15px">Headquarters</p></div>';
 
         div.innerHTML +=
-            "<div style='padding-bottom:5px;overflow:auto;'><img src =" + config.circleMarker + "style='width:30px;height:30px;border-radius:50%;float:left'><p style=\"float:right;padding:6px;padding-right:18px;\">Field Office</p></div>";
+            "<div style='text-align: left;padding-bottom:5px;overflow:auto;'><img src =" + config.circleMarker + "style='width:30px;height:30px;border-radius:50%;float:left'><p style=\"float:right;padding:6px;padding-right:18px;\">Field Office</p></div>";
         return div;
     };
     legend.addTo(map);
