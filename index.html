@@ -2,6 +2,8 @@
     <title>AFP Map</title>
 
     <link href="https://fonts.googleapis.com/css?family=Cardo:400,700|Oswald" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+
 
     <meta charset="utf-8">
 
@@ -68,6 +70,45 @@
             height: 70vh;
             overflow: auto;
             font-family: 'Oswald', serif;
+        }
+
+        /*draw border, format checkbox*/
+        .leaflet-control-layers input[type="checkbox"]{
+            appearance: none;
+            width:12px;
+            height:12px;
+            background-color: #d5d5d5;
+            border: 1.5px solid #279989;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+            margin: 1px;            
+        }
+
+        /*Fill color when cursor hovers*/
+        .leaflet-control-layers input[type="checkbox"]:hover{
+            background-color: #a5a5a5;
+        }
+
+        /*Fade in green background when checked*/
+        .leaflet-control-layers input[type="checkbox"]:checked{
+            background-color:#279989;
+            transition:.65s;
+        }
+
+        /*Draw the check when box is clicked*/
+        .leaflet-control-layers input[type="checkbox"]:checked::after{
+            display:block;
+        }
+
+        /*Load the check*/
+        .leaflet-control-layers input[type="checkbox"]:after{
+            font-family: "Font Awesome 5 Free";
+            font-weight:1000;
+            font-size:10px;
+            content:"\f00c";
+            color:white;
+            display:none;
         }
 
 
@@ -540,7 +581,7 @@
         let map_height = map_div.offsetHeight;
         div.innerHTML = '<form>' + boxes + '</form>';
         div.style.height = map_height;
-        div.style.width = map_width - 1500;
+        div.style.width = map_width - 1200;
 
         for (const [k, v] of Object.entries(checkboxes)) {
             document.getElementById(k).addEventListener(
