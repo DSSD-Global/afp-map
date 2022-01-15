@@ -284,10 +284,19 @@
             right:5px;
             padding:5px;
             cursor:pointer;
+<<<<<<< Updated upstream
             font-size:30px;
             border:none;
             z-index:5000;
             background-color: rgba(0, 98, 155, 0.4);
+=======
+        }
+
+        .toggle_button_filter{
+            position:absolute;
+            top: 5px;
+            right: 25vw;
+>>>>>>> Stashed changes
         }
 
         .filter_button{
@@ -468,10 +477,7 @@
         [0, 0],
         2
     );
-    map.setMaxBounds([
-        [100, -180],
-        [-75, 200],
-    ]);
+    map.setMaxBounds(map.getBounds());
 
     // Style our sidebar
     var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
