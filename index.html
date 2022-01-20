@@ -111,6 +111,7 @@
             font-size: 1.5vw;
             text-align: center;
             margin: 10px 20px 10px 20px;
+            word-wrap: break-word;
         }
 
         .org_img {
@@ -124,6 +125,7 @@
             font-size: 1.15vw;
             color: #464646;
             margin: 10px 20px 10px 20px;
+            word-wrap: break-word;
         }
 
         .org_url {
@@ -131,6 +133,7 @@
             font-size: 1.15vw;
             color: #464646;
             margin: 20px 20px 10px 20px;
+            word-wrap: break-word;
         }
 
         .org_url > a {
@@ -478,12 +481,18 @@
     );
     map.setMaxBounds(map.getBounds());
 
+
     // Style our sidebar
     var right_sidebar = document.querySelector(".leaflet-top.leaflet-right");
     var toggle_right_sidebar = document.createElement("button");
+   // L.DomEvent.disableScrollPropagation(document.getElementById(".leaflet-top.leaflet-right"));
+    var div = L.DomUtil.create("div", ".leaflet-top.leaflet-right");
+    L.DomEvent.disableClickPropagation(div);
+    L.DomEvent.disableScrollPropagation(div);
     toggle_right_sidebar.classList.add('toggle_button_open');
 
-    toggle_right_sidebar.onclick = function () {
+    toggle_right_sidebar.onclick = function (ev) {
+        L.DomEvent.stopPropagation(ev);
         if (right_sidebar.style.visibility == 'hidden') {
             right_sidebar.style.visibility = 'visible';
             toggle_right_sidebar.innerHTML = ">";
@@ -500,10 +509,12 @@
     right_sidebar.after(toggle_right_sidebar)
     toggle_right_sidebar.innerHTML = ">"
 
+
     // Create a map legend and add it to the upper right corner of our map
     var legend = L.control({position: "topright"});
     legend.onAdd = function (_) {
         var div = L.DomUtil.create("div", "info legend");
+
         //representing that the AfP logo markers represent headquarters
         div.innerHTML +=
             "<div style='text-align: left;overflow:auto;margin-top:20px'><img src =" +
@@ -512,11 +523,14 @@
 
         div.innerHTML +=
             "<div style='text-align: left;padding-bottom:5px;overflow:auto;'><img src =" + config.circleMarker + "style='width:30px;height:30px;border-radius:50%;float:left'><p style=\"float:right;padding:6px;padding-right:18px;\">Field Office</p></div>";
-        return div;
+
+            return div;
     };
+
     legend.addTo(map);
 
     map.zoomControl.setPosition("topright");
+    map.doubleClickZoom.disable();
 
     var boxes = "<div style='background-color:transparent;border:0' class = leaflet-control-layers id = 'checkboxes'>";
     L.Control.Checkboxes = L.Control.extend({
@@ -551,6 +565,8 @@
         div.innerHTML = '<form>' + boxes + '</form>';
         div.style.height = map_height;
         div.style.width = map_width - 1500;
+        L.DomEvent.disableClickPropagation(div);
+        L.DomEvent.disableScrollPropagation(div);
 
         for (const [k, v] of Object.entries(checkboxes)) {
             document.getElementById(k).addEventListener(
@@ -572,6 +588,8 @@
         var div = document.getElementById("box_control");
         div.innerHTML = "<div class=t id ='checkboxes'><button type=button class = \"filter_button\">≡</button></div>";
         div.style.cssText = '.leaflet-top'
+        L.DomEvent.disableClickPropagation(div);
+        L.DomEvent.disableScrollPropagation(div);
     }
 
     box_control({position: "topright"}).addTo(map);
