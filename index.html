@@ -797,6 +797,8 @@
                 var lat = latlon.slice(1, comma);
                 var lon = latlon.slice(comma + 1, latlon.length - 1);
                 var currentOrgName = currentOrg[columnIndexMapping["Organization Name"]];
+                console.log(currentOrgName);
+    
 
                 const m = L.marker([lat, lon], {icon: afpIcon});
                 m.currentOrgName = currentOrgName;
@@ -853,7 +855,7 @@
         //get specific spreadsheet in specific range
         var params = {
             spreadsheetId: '1Z2PSCbO6AKlpV8_wby-Lm0Ww9tpa6NY8R6kRtHSkLLM',
-            range: 'A2:C251'
+            range: 'A2:C'
         }
 
         //make request to sheets api
@@ -894,7 +896,7 @@
         //specify ID of spreadsheet, range of data we want from that spreadsheet
         var params = {
             spreadsheetId: '1Vfzjkiib0ZfwszfKoRdedp9QzXMopccnd2OZIwzqxvs',
-            range: 'B2:O136',
+            range: 'B2:O',
         };
         //get all the data
         var request = gapi.client.sheets.spreadsheets.values.get(params);
